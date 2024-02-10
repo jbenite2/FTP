@@ -1,3 +1,4 @@
+#include <sys/_types/_size_t.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -64,11 +65,14 @@ int main()
     }
 
     // Send the file
-    if (send(sockfd, buffer, fileSize, 0) == -1) {
+	size_t bytesSent = send(sockfd, buffer, fileSize, 0);
+    if (bytesSent == -1) {
         perror("send");
         delete[] buffer;
         return 6;
     }
+
+	std::cout << "Sent " << bytesSent << " bytes" << std::endl;
 
     // Cleanup
     delete[] buffer;

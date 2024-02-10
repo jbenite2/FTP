@@ -60,6 +60,11 @@ int main()
 
   char buffer[10240] = {0};
   ssize_t valread = recv(clientSockfd, buffer, 10240, 0);
+  if (valread == -1) {
+	perror("recv");
+	return 5;
+  }
+  std::cout << "Bytes received: " << valread << '\n';
   std::cout << "Received: " << buffer << '\n';
 
   std::string message= "Hello from server!";
