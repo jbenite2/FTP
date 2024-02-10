@@ -1,4 +1,3 @@
-#include <sys/_types/_size_t.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -8,6 +7,9 @@
 #include <errno.h>
 #include <unistd.h>
 #include <fstream>
+#include <iostream>
+#include <sstream>
+
 
 
 #include <iostream>
