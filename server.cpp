@@ -58,8 +58,8 @@ int main()
 
   // receive/send file from/to the client
 
-  char buffer[1024] = {0};
-  ssize_t valread = recv(clientSockfd, buffer, 1024, 0);
+  char buffer[10240] = {0};
+  ssize_t valread = recv(clientSockfd, buffer, 10240, 0);
   std::cout << "Received: " << buffer << '\n';
 
   std::string message= "Hello from server!";
