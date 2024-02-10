@@ -9,9 +9,9 @@
 
 #include <iostream>
 #include <sstream>
+#include <string>
 
-int
-main()
+int main()
 {
   // create a socket using TCP IP
   int sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -23,11 +23,11 @@ main()
     return 1;
   }
 
-  // bind address to socket
+  // Bind to a port and an address
   struct sockaddr_in addr;
   addr.sin_family = AF_INET;
   addr.sin_port = htons(40000); // the server will listen on port 4000
-  addr.sin_addr.s_addr = inet_addr("127.0.0.1"); // open socket on localhost IP address for server
+  addr.sin_addr.s_addr = inet_addr("127.0.1.1"); // open socket on localhost IP address for server
   memset(addr.sin_zero, '\0', sizeof(addr.sin_zero));
 
   if (bind(sockfd, (struct sockaddr*)&addr, sizeof(addr)) == -1) {
@@ -56,33 +56,20 @@ main()
   std::cout << "Accept a connection from: " << ipstr << ":" <<
     ntohs(clientAddr.sin_port) << std::endl;
 
-  // receive/send data (1 message) from/to the client
-  bool isEnd = false;
-  char buf[20] = {0};
-  std::stringstream ss;
+  // receive/send file from/to the client
 
-  while (!isEnd) {
-    memset(buf, '\0', sizeof(buf));
+  char buffer[1024] = {0};
+  ssize_t valread = recv(clientSockfd, buffer, 1024, 0);
+  std::cout << "Received: " << buffer << '\n';
 
-    if (recv(clientSockfd, buf, 20, 0) == -1) {
-      perror("recv");
-      return 5;
-    }
-
-    ss << buf << std::endl;
-    std::cout << buf << std::endl;
-
-    if (send(clientSockfd, buf, 20, 0) == -1) {
-      perror("send");
-      return 6;
-    }
-
-    if (ss.str() == "close\n")
-      break;
-
-    ss.str("");
+  std::string message= "Hello from server!";
+  if(send(clientSockfd, message.c_str(), message.length(), 0)==-1){
+	  perror("send");
+	  return 6;
   }
+  std::cout<<"Message received successfully\n";
 
+  shutdown(clientSockfd, SHUT_RDWR);
   close(clientSockfd);
 
   return 0;

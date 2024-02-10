@@ -6,20 +6,21 @@
 #include <stdio.h>
 #include <errno.h>
 #include <unistd.h>
+#include <fstream>
+
 
 #include <iostream>
 #include <sstream>
 
-int
-main()
+int main()
 {
   // create a socket using TCP IP
   int sockfd = socket(AF_INET, SOCK_STREAM, 0);
 
   struct sockaddr_in serverAddr;
-  serverAddr.sin_family = AF_INET;
+  serverAddr.sin_family = AF_INET; // use IPv4 address
   serverAddr.sin_port = htons(40000);  // open a socket on port 4000 of the server
-  serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1"); // use localhost as the IP address of the server to set up the socket
+  serverAddr.sin_addr.s_addr = inet_addr("127.0.1.1"); // use localhost as the IP address of the server to set up the socket
   memset(serverAddr.sin_zero, '\0', sizeof(serverAddr.sin_zero));
 
   // connect to the server
@@ -40,39 +41,39 @@ main()
   std::cout << "Set up a connection from: " << ipstr << ":" <<
     ntohs(clientAddr.sin_port) << std::endl;
 
+   // File name to send
+    std::string filename = "Testing.txt";
 
-  // send/receive data (1 message) to/from the server
-  bool isEnd = false;
-  std::string input;
-  char buf[20] = {0};
-  std::stringstream ss;
-
-  while (!isEnd) {
-    memset(buf, '\0', sizeof(buf));
-
-    std::cout << "send: ";
-    std::cin >> input;
-    if (send(sockfd, input.c_str(), input.size(), 0) == -1) {
-      perror("send");
-      return 4;
+    // Open the file
+    std::ifstream file(filename, std::ios::binary | std::ios::ate);
+    if (!file.is_open()) {
+        std::cerr << "Unable to open file: " << filename << std::endl;
+        return 4;
     }
 
+    // Get file size
+    std::streamsize fileSize = file.tellg();
+    file.seekg(0, std::ios::beg);
 
-    if (recv(sockfd, buf, 20, 0) == -1) {
-      perror("recv");
-      return 5;
+    // Read the file into a buffer
+    char *buffer = new char[fileSize];
+    if (!file.read(buffer, fileSize)) {
+        std::cerr << "Error reading file: " << filename << std::endl;
+        delete[] buffer;
+        return 5;
     }
-    ss << buf << std::endl;
-    std::cout << "echo: ";
-    std::cout << buf << std::endl;
 
-    if (ss.str() == "close\n")
-      break;
+    // Send the file
+    if (send(sockfd, buffer, fileSize, 0) == -1) {
+        perror("send");
+        delete[] buffer;
+        return 6;
+    }
 
-    ss.str("");
-  }
+    // Cleanup
+    delete[] buffer;
+    file.close();
+    close(sockfd);
 
-  close(sockfd);
-
-  return 0;
+    return 0;
 }
