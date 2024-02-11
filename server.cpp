@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
 	std::cout << "FILE NAME SIZE: " << filenameSize << std::endl;
 
     // Open the output file
-	std::string filePath = std::string(argv[2]) +"/"+ filename;
+	std::string filePath = std::string(argv[2]) +"/output.txt";
 	
     
   // receive/send file from/to the client
