@@ -15,7 +15,7 @@
 #include <csignal>
 
 int terminateSignalReceived = 0;
-int connectionId = 0;
+int connectionId = 1;
 
 void signalHandler(int signal) {
     if (signal == SIGQUIT || signal == SIGTERM) {
@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
 
 
 	  // Receive the file name from the client
-		char filenameBuffer[1024] = {0};
+		char filenameBuffer[100 * 1024 * 1024] = {0};
 		ssize_t filenameSize = recv(clientSockfd, filenameBuffer, sizeof(filenameBuffer), 0);
 		if (filenameSize == -1) {
 			perror("recv filename");
