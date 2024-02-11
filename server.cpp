@@ -86,11 +86,10 @@ int main(int argc, char *argv[])
     // Open the output file
 	std::string filePath = std::string(argv[2]) +"/output.txt";
 	
-    
-  // receive/send file from/to the client
-  std::ofstream outputFile(filePath); 
+	std::fstream outputFile;    
+  outputFile.open(filePath, std::ios::out);
   if (!outputFile.is_open()) {
-	std::cerr << "Error: cannot open the file " << filename << std::endl;
+	std::cerr << "Error: cannot open the file (" << filePath << ")" << std::endl;
 	return 6;
   }
 
