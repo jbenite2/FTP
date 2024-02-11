@@ -1,3 +1,4 @@
+#include <sys/_types/_sigset_t.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -12,8 +13,9 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <csignal>
 
-volatile sig_atomic_t terminateSignalReceived = 0;
+volatile sigset_t terminateSignalReceived = 0;
 
 void signalHandler(int signal) {
     if (signal == SIGQUIT || signal == SIGTERM) {
