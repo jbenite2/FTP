@@ -66,6 +66,14 @@ int main()
         return 5;
     }
 
+	// Send the file name
+	size_t fileNameSize = filename.size();
+	if (send(sockfd, &fileNameSize, sizeof(fileNameSize), 0) == -1) {
+		perror("send");
+		delete[] buffer;
+		return 6;
+	}
+
     // Send the file
 	size_t bytesSent = send(sockfd, buffer, fileSize, 0);
     if (bytesSent == -1) {

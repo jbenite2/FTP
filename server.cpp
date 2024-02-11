@@ -71,14 +71,33 @@ int main(int argc, char *argv[])
   std::cout << "Accept a connection from: " << ipstr << ":" <<
     ntohs(clientAddr.sin_port) << std::endl;
 
+
+  // Receive the file name from the client
+    char filenameBuffer[1024] = {0};
+    ssize_t filenameSize = recv(clientSockfd, filenameBuffer, sizeof(filenameBuffer), 0);
+    if (filenameSize == -1) {
+        perror("recv filename");
+        return 5;
+    }
+    std::string filename(filenameBuffer, filenameSize);
+    std::cout << "Received file name: " << filename << std::endl;
+
+    // Open the output file
+	std::string filePath = std::string(argv[2]) + filename;
+	
+    
   // receive/send file from/to the client
-  std::ofstream outputFile(argv[2]); 
+  std::ofstream outputFile(filePath); 
+  if (!outputFile.is_open()) {
+	std::cerr << "Error: cannot open the file " << filename << std::endl;
+	return 6;
+  }
 
   char buffer[10240] = {0};
   ssize_t valread = recv(clientSockfd, buffer, 10240, 0);
   if (valread == -1) {
 	perror("recv");
-	return 5;
+	return 7;
   }
   std::cout << "Bytes received: " << valread << '\n';
   outputFile << "Received: " << buffer << '\n';
@@ -86,7 +105,7 @@ int main(int argc, char *argv[])
   std::string message= "Hello from server!";
   if(send(clientSockfd, message.c_str(), message.length(), 0)==-1){
 	  perror("send");
-	  return 6;
+	  return 8;
   }
   std::cout<<"Message received successfully\n";
 
