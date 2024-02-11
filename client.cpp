@@ -58,6 +58,10 @@ int main()
     std::streamsize fileSize = file.tellg();
     file.seekg(0, std::ios::beg);
 
+	//Read teh file name into a buffer
+	char *fileNameBuffer = new char[filename.size()];
+	memcpy(fileNameBuffer, filename.c_str(), filename.size());
+
     // Read the file into a buffer
     char *buffer = new char[fileSize];
     if (!file.read(buffer, fileSize)) {
@@ -68,7 +72,7 @@ int main()
 
 	// Send the file name
 	size_t fileNameSize = filename.size();
-	if (send(sockfd, &fileNameSize, sizeof(fileNameSize), 0) == -1) {
+	if (send(sockfd, fileNameBuffer, sizeof(fileNameSize), 0) == -1) {
 		perror("send");
 		delete[] buffer;
 		return 6;
