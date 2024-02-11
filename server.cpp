@@ -7,6 +7,7 @@
 #include <errno.h>
 #include <unistd.h>
 #include <fstream>
+#include <sys/stat.h>
 
 #include <iostream>
 #include <sstream>
@@ -83,8 +84,15 @@ int main(int argc, char *argv[])
     std::cout << "Received file name: " << filenameBuffer << std::endl;
 	std::cout << "FILE NAME SIZE: " << filenameSize << std::endl;
 
+
+	std::string directoryPath = std::string(argv[2]);
+	if (mkdir(directoryPath.c_str(), 0777) == -1 && errno != EEXIST) {
+			// Directory doesn't exist, try to create it
+			perror("mkdir");
+			return 2;
+	}
     // Open the output file
-	std::string filePath = std::string(argv[2]) +"/output.txt";
+	std::string filePath = directoryPath+"/output.txt";
 	
 	std::fstream outputFile;    
   outputFile.open(filePath, std::ios::out);
@@ -102,7 +110,7 @@ int main(int argc, char *argv[])
   std::cout << "Bytes received: " << valread << '\n';
   outputFile << "Received: " << buffer << '\n';
 
-  std::string message= "Hello from server!";
+ std::string message= "Hello from server!";
   if(send(clientSockfd, message.c_str(), message.length(), 0)==-1){
 	  perror("send");
 	  return 8;
