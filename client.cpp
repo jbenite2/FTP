@@ -16,6 +16,18 @@
 #include <iostream>
 #include <sstream>
 
+std::string getLastToken(const std::string& str, char delimiter) {
+    std::istringstream iss(str);
+    std::string token;
+    while (std::getline(iss, token, delimiter)) {
+        if (!token.empty()) {
+            if (iss.peek() != EOF) continue;
+            return token;
+        }
+    }
+    return "";
+}
+
 int main(int argc, char *argv[])
 {
 	  // create a socket using TCP IP
@@ -29,7 +41,9 @@ int main(int argc, char *argv[])
 
 	  // parse the arguments
 	  int port = std::stoi(argv[1]);
-	  std::string filename = argv[2];
+	  std::string filename = getLastToken(argv[2], '/');
+
+	  std::cout << "Filename: " << filename << std::endl;
 
 	  // Bind to a port and an address
 	  struct sockaddr_in serverAddr;
