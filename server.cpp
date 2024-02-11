@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
 
   struct sockaddr_in addr;
   addr.sin_family = AF_INET;
-  addr.sin_port = htons(4000); // the server will listen on port 4000
+  addr.sin_port = htons(40000); // the server will listen on port 4000
   addr.sin_addr.s_addr = inet_addr("127.0.1.1"); // open socket on localhost IP address for server
   memset(addr.sin_zero, '\0', sizeof(addr.sin_zero));
 
