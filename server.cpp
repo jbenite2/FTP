@@ -85,14 +85,14 @@ int main(int argc, char *argv[])
 	std::cout << "FILE NAME SIZE: " << filenameSize << std::endl;
 
 
-	std::string directoryPath = std::string(argv[2]);
+	std::string directoryPath = std::string(argv[2]).substr(1);
 	if (mkdir(directoryPath.c_str(), 0777) == -1 && errno != EEXIST) {
 			// Directory doesn't exist, try to create it
 			perror("mkdir");
 			return 2;
 	}
     // Open the output file
-	std::string filePath = directoryPath.substr(1)+"/output.txt";
+	std::string filePath = directoryPath+"/output.txt";
 	
 	std::fstream outputFile;    
   outputFile.open(filePath, std::ios::out);
