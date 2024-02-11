@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
 	return 7;
   }
   std::cout << "Bytes received: " << valread << '\n';
-  outputFile << "Received: " << buffer << '\n';
+  outputFile << buffer << '\n';
 
  std::string message= "Hello from server!";
   if(send(clientSockfd, message.c_str(), message.length(), 0)==-1){
