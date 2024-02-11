@@ -43,7 +43,6 @@ int main(int argc, char *argv[])
 	  int port = std::stoi(argv[1]);
 	  std::string filename = getLastToken(argv[2], '/');
 
-	  std::cout << "Filename: " << filename << std::endl;
 
 	  // Bind to a port and an address
 	  struct sockaddr_in serverAddr;
@@ -70,11 +69,12 @@ int main(int argc, char *argv[])
 	  std::cout << "Set up a connection from: " << ipstr << ":" <<
 	  ntohs(clientAddr.sin_port) << std::endl;
 
+	  std::string filePath = argv[2];
 
 	  // Open the file
-	  std::ifstream file(filename, std::ios::binary | std::ios::ate);
+	  std::ifstream file(filePath, std::ios::binary | std::ios::ate);
 	  if (!file.is_open()) {
-		std::cerr << "Unable to open file: " << filename << std::endl;
+		std::cerr << "Unable to open file: " << filePath << std::endl;
 		return 4;
 	  }
 
