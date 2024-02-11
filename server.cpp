@@ -34,10 +34,6 @@ int main(int argc, char *argv[])
   int port = std::stoi(argv[1]);
   /* int port = 40000; */
 
-  for(int i=0; i<argc; i++){
-		std::cout<<argv[i]<<"\n";
-  }
-
   std::cout<<"Port number: "<<port<<'\n';
 
   struct sockaddr_in addr;
