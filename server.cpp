@@ -1,4 +1,3 @@
-#include <sys/_types/_sigset_t.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
