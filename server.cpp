@@ -25,24 +25,23 @@ int main(int argc, char *argv[])
   }
 
   // Bind to a port and an address
-  if(argc!=2){
+  if(argc!=3){
 	  std::cerr<<"Error: incorrect number of arguments\n";
 	  return 1;
   }
 
-  int port;
+  /* int port = std::stoi(argv[1]); */
+  int port = 40000;
 
-  try{
-	  std::stoi(argv[1]);
+  for(int i=0; i<argc; i++){
+		std::cout<<argv[i]<<"\n";
   }
-  catch(std::invalid_argument& e){
-	  std::cerr<<"Error: invalid port number\n";
-	  return 1;
-  }
+
+  std::cout<<"Port number: "<<port<<'\n';
 
   struct sockaddr_in addr;
   addr.sin_family = AF_INET;
-  addr.sin_port = htons(port); // the server will listen on port 4000
+  addr.sin_port = htons(4000); // the server will listen on port 4000
   addr.sin_addr.s_addr = inet_addr("127.0.1.1"); // open socket on localhost IP address for server
   memset(addr.sin_zero, '\0', sizeof(addr.sin_zero));
 
