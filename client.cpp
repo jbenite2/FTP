@@ -47,6 +47,9 @@ int main()
    // File name to send
     std::string filename = "Testingggg.txt";
 
+
+	std::cout << filename.length() << std::endl;
+
     // Open the file
     std::ifstream file(filename, std::ios::binary | std::ios::ate);
     if (!file.is_open()) {
