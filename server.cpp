@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
 			return 2;
 	}
     // Open the output file
-	std::string filePath = directoryPath+filename;
+	std::string filePath = directoryPath+"/"+filename;
 	
 	std::fstream outputFile;    
   outputFile.open(filePath, std::ios::out);
