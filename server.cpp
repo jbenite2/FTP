@@ -32,9 +32,6 @@ int main(int argc, char *argv[])
   }
 
   int port = std::stoi(argv[1]);
-  /* int port = 40000; */
-
-  std::cout<<"Port number: "<<port<<'\n';
 
   struct sockaddr_in addr;
   addr.sin_family = AF_INET;
