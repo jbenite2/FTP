@@ -63,7 +63,7 @@ int main()
 
 	//Read teh file name into a buffer
 	char *fileNameBuffer = new char[filename.length()];
-	memcpy(fileNameBuffer, filename.c_str(), filename.size());
+	memcpy(fileNameBuffer, filename.c_str(), filename.length());
 
     // Read the file into a buffer
     char *buffer = new char[fileSize];
