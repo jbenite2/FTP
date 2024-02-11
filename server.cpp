@@ -80,10 +80,10 @@ int main(int argc, char *argv[])
         return 5;
     }
     std::string filename(filenameBuffer, filenameSize);
-    std::cout << "Received file name: " << filename << std::endl;
+    std::cout << "Received file name: " << filenameBuffer << std::endl;
 
     // Open the output file
-	std::string filePath = std::string(argv[2]) + filename;
+	std::string filePath = std::string(argv[2]) +"/"+ filename;
 	
     
   // receive/send file from/to the client
