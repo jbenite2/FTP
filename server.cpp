@@ -13,8 +13,19 @@
 #include <sstream>
 #include <string>
 
+volatile sig_atomic_t terminateSignalReceived = 0;
+
+void signalHandler(int signal) {
+    if (signal == SIGQUIT || signal == SIGTERM) {
+        terminateSignalReceived = 1;
+    }
+}
+
 int main(int argc, char *argv[])
 {
+	signal(SIGQUIT, signalHandler);
+	signal(SIGTERM, signalHandler);
+
   // create a socket using TCP IP
   int sockfd = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -50,68 +61,71 @@ int main(int argc, char *argv[])
     return 3;
   }
 
-  // accept a new connection from a client
-  struct sockaddr_in clientAddr;
-  socklen_t clientAddrSize = sizeof(clientAddr);
-  int clientSockfd = accept(sockfd, (struct sockaddr*)&clientAddr, &clientAddrSize);
+  while (1) {
+	  // accept a new connection from a client
+	  struct sockaddr_in clientAddr;
+	  socklen_t clientAddrSize = sizeof(clientAddr);
+	  int clientSockfd = accept(sockfd, (struct sockaddr*)&clientAddr, &clientAddrSize);
 
-  if (clientSockfd == -1) {
-    perror("accept");
-    return 4;
+	  if (clientSockfd == -1) {
+		perror("accept");
+		return 4;
+	  }
+
+	  char ipstr[INET_ADDRSTRLEN] = {'\0'};
+	  inet_ntop(clientAddr.sin_family, &clientAddr.sin_addr, ipstr, sizeof(ipstr));
+	  std::cout << "Accept a connection from: " << ipstr << ":" <<
+		ntohs(clientAddr.sin_port) << std::endl;
+
+
+	  // Receive the file name from the client
+		char filenameBuffer[1024] = {0};
+		ssize_t filenameSize = recv(clientSockfd, filenameBuffer, sizeof(filenameBuffer), 0);
+		if (filenameSize == -1) {
+			perror("recv filename");
+			return 5;
+		}
+		std::string filename(filenameBuffer, filenameSize);
+		std::cout << "Received file name: " << filename << std::endl;
+		std::cout << "FILE NAME SIZE: " << filenameSize << std::endl;
+
+
+		std::string directoryPath = std::string(argv[2]).substr(1);
+		if (mkdir(directoryPath.c_str(), 0777) == -1 && errno != EEXIST) {
+				// Directory doesn't exist, try to create it
+				perror("mkdir");
+				return 2;
+		}
+		// Open the output file
+		std::string filePath = directoryPath+"/"+filename;
+		
+		std::fstream outputFile;    
+	  outputFile.open(filePath, std::ios::out);
+	  if (!outputFile.is_open()) {
+		std::cerr << "Error: cannot open the file (" << filePath << ")" << std::endl;
+		return 6;
+	  }
+
+	  char buffer[10240] = {0};
+	  ssize_t valread = recv(clientSockfd, buffer, 10240, 0);
+	  if (valread == -1) {
+		perror("recv");
+		return 7;
+	  }
+	  std::cout << "Bytes received: " << valread << '\n';
+	  outputFile << buffer << '\n';
+
+	 std::string message= "Hello from server!";
+	  if(send(clientSockfd, message.c_str(), message.length(), 0)==-1){
+		  perror("send");
+		  return 8;
+	  }
+	 std::cout<<"Message received successfully\n";
+	 shutdown(clientSockfd, SHUT_RDWR);
+	 close(clientSockfd);
   }
 
-  char ipstr[INET_ADDRSTRLEN] = {'\0'};
-  inet_ntop(clientAddr.sin_family, &clientAddr.sin_addr, ipstr, sizeof(ipstr));
-  std::cout << "Accept a connection from: " << ipstr << ":" <<
-    ntohs(clientAddr.sin_port) << std::endl;
-
-
-  // Receive the file name from the client
-    char filenameBuffer[1024] = {0};
-    ssize_t filenameSize = recv(clientSockfd, filenameBuffer, sizeof(filenameBuffer), 0);
-    if (filenameSize == -1) {
-        perror("recv filename");
-        return 5;
-    }
-    std::string filename(filenameBuffer, filenameSize);
-    std::cout << "Received file name: " << filename << std::endl;
-	std::cout << "FILE NAME SIZE: " << filenameSize << std::endl;
-
-
-	std::string directoryPath = std::string(argv[2]).substr(1);
-	if (mkdir(directoryPath.c_str(), 0777) == -1 && errno != EEXIST) {
-			// Directory doesn't exist, try to create it
-			perror("mkdir");
-			return 2;
-	}
-    // Open the output file
-	std::string filePath = directoryPath+"/"+filename;
-	
-	std::fstream outputFile;    
-  outputFile.open(filePath, std::ios::out);
-  if (!outputFile.is_open()) {
-	std::cerr << "Error: cannot open the file (" << filePath << ")" << std::endl;
-	return 6;
-  }
-
-  char buffer[10240] = {0};
-  ssize_t valread = recv(clientSockfd, buffer, 10240, 0);
-  if (valread == -1) {
-	perror("recv");
-	return 7;
-  }
-  std::cout << "Bytes received: " << valread << '\n';
-  outputFile << buffer << '\n';
-
- std::string message= "Hello from server!";
-  if(send(clientSockfd, message.c_str(), message.length(), 0)==-1){
-	  perror("send");
-	  return 8;
-  }
-  std::cout<<"Message received successfully\n";
-
-  shutdown(clientSockfd, SHUT_RDWR);
-  close(clientSockfd);
+  close(sockfd);
 
   return 0;
 }
