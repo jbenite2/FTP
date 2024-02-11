@@ -14,7 +14,7 @@
 #include <string>
 #include <csignal>
 
-volatile sigset_t terminateSignalReceived = 0;
+int terminateSignalReceived = 0;
 
 void signalHandler(int signal) {
     if (signal == SIGQUIT || signal == SIGTERM) {
