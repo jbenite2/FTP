@@ -15,6 +15,7 @@
 #include <csignal>
 
 int terminateSignalReceived = 0;
+int connectionId = 0;
 
 void signalHandler(int signal) {
     if (signal == SIGQUIT || signal == SIGTERM) {
@@ -98,7 +99,9 @@ int main(int argc, char *argv[])
 				return 2;
 		}
 		// Open the output file
-		std::string filePath = directoryPath+"/"+filename;
+		/* std::string filePath = directoryPath+"/"+filename; */
+		std::string filePath = directoryPath+"/"+ std::to_string(connectionId) +".file";
+		connectionId++;
 		
 		std::fstream outputFile;    
 	  outputFile.open(filePath, std::ios::out);
