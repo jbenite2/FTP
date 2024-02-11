@@ -45,7 +45,7 @@ int main()
     ntohs(clientAddr.sin_port) << std::endl;
 
    // File name to send
-    std::string filename = "Testing.txt";
+    std::string filename = "Testingggg.txt";
 
     // Open the file
     std::ifstream file(filename, std::ios::binary | std::ios::ate);
