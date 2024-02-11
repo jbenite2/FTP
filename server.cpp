@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
         return 5;
     }
     std::string filename(filenameBuffer, filenameSize);
-    std::cout << "Received file name: " << filenameBuffer << std::endl;
+    std::cout << "Received file name: " << filename << std::endl;
 	std::cout << "FILE NAME SIZE: " << filenameSize << std::endl;
 
 
