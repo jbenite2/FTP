@@ -74,7 +74,7 @@ int main()
     }
 
 	// Send the file name
-	size_t fileNameSize = filename.size();
+	size_t fileNameSize = filename.length();
 	if (send(sockfd, fileNameBuffer, sizeof(fileNameSize), 0) == -1) {
 		perror("send");
 		delete[] buffer;
