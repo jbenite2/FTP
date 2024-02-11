@@ -81,6 +81,7 @@ int main(int argc, char *argv[])
     }
     std::string filename(filenameBuffer, filenameSize);
     std::cout << "Received file name: " << filenameBuffer << std::endl;
+	std::cout << "FILE NAME SIZE: " << filenameSize << std::endl;
 
     // Open the output file
 	std::string filePath = std::string(argv[2]) +"/"+ filename;
