@@ -59,7 +59,7 @@ int main()
     file.seekg(0, std::ios::beg);
 
 	//Read teh file name into a buffer
-	char *fileNameBuffer = new char[filename.size()];
+	char *fileNameBuffer = new char[filename.length()];
 	memcpy(fileNameBuffer, filename.c_str(), filename.size());
 
     // Read the file into a buffer
