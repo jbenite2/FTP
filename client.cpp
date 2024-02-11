@@ -77,7 +77,7 @@ int main()
 	size_t fileNameSize = filename.length();
 	std::cout << "Sending file name size: " << fileNameSize << std::endl;
 	std::cout << "Sending file name: " << fileNameBuffer << std::endl;
-	if (send(sockfd, fileNameBuffer, sizeof(fileNameSize), 0) == -1) {
+	if (send(sockfd, fileNameBuffer, fileNameSize, 0) == -1) {
 		perror("send");
 		delete[] buffer;
 		return 6;
