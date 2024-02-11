@@ -6,12 +6,13 @@
 #include <stdio.h>
 #include <errno.h>
 #include <unistd.h>
+#include <fstream>
 
 #include <iostream>
 #include <sstream>
 #include <string>
 
-int main()
+int main(int argc, char *argv[])
 {
   // create a socket using TCP IP
   int sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -24,9 +25,24 @@ int main()
   }
 
   // Bind to a port and an address
+  if(argc!=2){
+	  std::cerr<<"Error: incorrect number of arguments\n";
+	  return 1;
+  }
+
+  int port;
+
+  try{
+	  std::stoi(argv[1]);
+  }
+  catch(std::invalid_argument& e){
+	  std::cerr<<"Error: invalid port number\n";
+	  return 1;
+  }
+
   struct sockaddr_in addr;
   addr.sin_family = AF_INET;
-  addr.sin_port = htons(40000); // the server will listen on port 4000
+  addr.sin_port = htons(port); // the server will listen on port 4000
   addr.sin_addr.s_addr = inet_addr("127.0.1.1"); // open socket on localhost IP address for server
   memset(addr.sin_zero, '\0', sizeof(addr.sin_zero));
 
@@ -57,6 +73,7 @@ int main()
     ntohs(clientAddr.sin_port) << std::endl;
 
   // receive/send file from/to the client
+  std::ofstream outputFile(argv[2]); 
 
   char buffer[10240] = {0};
   ssize_t valread = recv(clientSockfd, buffer, 10240, 0);
@@ -65,7 +82,7 @@ int main()
 	return 5;
   }
   std::cout << "Bytes received: " << valread << '\n';
-  std::cout << "Received: " << buffer << '\n';
+  outputFile << "Received: " << buffer << '\n';
 
   std::string message= "Hello from server!";
   if(send(clientSockfd, message.c_str(), message.length(), 0)==-1){
