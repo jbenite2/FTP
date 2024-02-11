@@ -87,6 +87,14 @@ int main(int argc, char *argv[])
     std::streamsize fileSize = file.tellg();
     file.seekg(0, std::ios::beg);
 
+	if(fileSize==0){
+		std::cerr << "Error: file is empty" << std::endl;
+		return 5;
+	} else if(fileSize>100*1024*1024){
+		std::cerr << "Error: file is too large" << std::endl;
+		return 5;
+	}
+
 	//Read teh file name into a buffer
 	char *fileNameBuffer = new char[filename.length()];
 	memcpy(fileNameBuffer, filename.c_str(), filename.length());
