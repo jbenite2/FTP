@@ -1,3 +1,4 @@
+#include <sys/_select.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -53,6 +54,10 @@ int main(int argc, char *argv[])
   addr.sin_addr.s_addr = inet_addr("127.0.1.1"); // open socket on localhost IP address for server
   memset(addr.sin_zero, '\0', sizeof(addr.sin_zero));
 
+  //Explicit error checking
+  //Greater than 1023
+  //Less than 65535
+
   // bind to the address and port and gracefully handle any error
   if (bind(sockfd, (struct sockaddr*)&addr, sizeof(addr)) == -1) {
     perror("bind");
@@ -70,6 +75,8 @@ int main(int argc, char *argv[])
 	  struct sockaddr_in clientAddr;
 	  socklen_t clientAddrSize = sizeof(clientAddr);
 	  int clientSockfd = accept(sockfd, (struct sockaddr*)&clientAddr, &clientAddrSize);
+	  
+	  /* select(clientSockfd+1, vfd_set *, fd_set *, fd_set *, struct timeval *); */
 
 	  if (clientSockfd == -1) {
 		perror("accept");

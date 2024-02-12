@@ -44,6 +44,14 @@ int main(int argc, char *argv[])
 	  int port = std::stoi(argv[2]);
 	  std::string filename = getLastToken(argv[3], '/');
 
+	  //Make sure it's a valid port
+	  //Greater than 1023
+	  //Less than 65535
+	  
+	  //Make sure it's a valid IP address
+	  //gethostname() function look up 
+	  //use this to check if the IP address is valid
+
 
 	  // Bind to a port and an address
 	  struct sockaddr_in serverAddr;
