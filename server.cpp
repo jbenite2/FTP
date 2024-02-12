@@ -52,6 +52,7 @@ int main(int argc, char *argv[])
   addr.sin_addr.s_addr = inet_addr("127.0.1.1"); // open socket on localhost IP address for server
   memset(addr.sin_zero, '\0', sizeof(addr.sin_zero));
 
+  // bind to the address and port and gracefully handle any error
   if (bind(sockfd, (struct sockaddr*)&addr, sizeof(addr)) == -1) {
     perror("bind");
     return 2;
