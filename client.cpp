@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
 
     // Send the file
 	size_t bytesSent = send(sockfd, buffer, fileSize, 0);
-    if (bytesSent == -1) {
+    if (bytesSent <= 0) {
         perror("send");
         delete[] buffer;
         return 6;
