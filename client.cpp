@@ -40,15 +40,20 @@ int main(int argc, char *argv[])
 	  }
 
 	  // parse the arguments
-	  int port = std::stoi(argv[1]);
-	  std::string filename = getLastToken(argv[2], '/');
+	  std::string ip = argv[1];
+	  int port = std::stoi(argv[2]);
+	  std::string filename = getLastToken(argv[3], '/');
 
 
 	  // Bind to a port and an address
 	  struct sockaddr_in serverAddr;
 	  serverAddr.sin_family = AF_INET; // use IPv4 address
 	  serverAddr.sin_port = htons(port);  // open a socket on port 4000 of the server
-	  serverAddr.sin_addr.s_addr = inet_addr("127.0.1.1"); // use localhost as the IP address of the server to set up the socket
+	  if(ip=="localhost"){
+		serverAddr.sin_addr.s_addr = inet_addr("127.0.1.1"); // use localhost as the IP address of the server to set up the socket
+	  }else{
+		serverAddr.sin_addr.s_addr = inet_addr(ip.c_str()); // use the IP address of the server to set up the socket
+	  }
 	  memset(serverAddr.sin_zero, '\0', sizeof(serverAddr.sin_zero));
 
 	  // connect to the server
@@ -81,6 +86,14 @@ int main(int argc, char *argv[])
     // Get file size
     std::streamsize fileSize = file.tellg();
     file.seekg(0, std::ios::beg);
+
+	if(fileSize==0){
+		std::cerr << "Error: file is empty" << std::endl;
+		return 5;
+	} else if(fileSize>100*1024*1024){
+		std::cerr << "Error: file is too large" << std::endl;
+		return 5;
+	}
 
 	//Read teh file name into a buffer
 	char *fileNameBuffer = new char[filename.length()];
