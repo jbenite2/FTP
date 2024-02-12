@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
 	  std::cout << "Set up a connection from: " << ipstr << ":" <<
 	  ntohs(clientAddr.sin_port) << std::endl;
 
-	  std::string filePath = argv[2];
+	  std::string filePath = argv[3];
 
 	  // Open the file
 	  std::ifstream file(filePath, std::ios::binary | std::ios::ate);
