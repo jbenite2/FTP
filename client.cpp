@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
 	  int sockfd = socket(AF_INET, SOCK_STREAM, 0);
 
 	  // check for right number of arguments
-	  if(argc!=3){
+	  if(argc!=4){
 		  std::cerr<<"Error: incorrect number of arguments\n";
 		  return 1;
 	  }
