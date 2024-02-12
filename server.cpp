@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <fstream>
 #include <sys/stat.h>
+#include <vector>
 
 #include <iostream>
 #include <sstream>
@@ -82,7 +83,7 @@ int main(int argc, char *argv[])
 
 
 	  // Receive the file name from the client
-		char filenameBuffer[100 * 1024 * 1024] = {0};
+		char filenameBuffer[100] = {0};
 		ssize_t filenameSize = recv(clientSockfd, filenameBuffer, sizeof(filenameBuffer), 0);
 		if (filenameSize == -1) {
 			perror("recv filename");
@@ -111,14 +112,14 @@ int main(int argc, char *argv[])
 		return 6;
 	  }
 
-	  char buffer[10240] = {0};
-	  ssize_t valread = recv(clientSockfd, buffer, 10240, 0);
+	  std::vector<char> buffer(100*1024*1024, 0);
+	  ssize_t valread = recv(clientSockfd, buffer.data(), buffer.size(), 0);
 	  if (valread == -1) {
 		perror("recv");
 		return 7;
 	  }
 	  std::cout << "Bytes received: " << valread << '\n';
-	  outputFile << buffer << '\n';
+	  outputFile.write(buffer.data(), valread);
 
 	 std::string message= "Hello from server!";
 	  if(send(clientSockfd, message.c_str(), message.length(), 0)==-1){
