@@ -40,28 +40,35 @@ int main(int argc, char *argv[])
 	  }
 
 	  // parse the arguments
-	  std::string ip = argv[1];
+	  char * ip = argv[1];
 	  int port = std::stoi(argv[2]);
 	  std::string filename = getLastToken(argv[3], '/');
 
 	  //Make sure it's a valid port
 	  //Greater than 1023
 	  //Less than 65535
+	  if(port<1024 || port>65534){
+		std::cerr<<"Error: invalid port number\n";
+		return 1;
+	  }
 	  
 	  //Make sure it's a valid IP address
 	  //gethostname() function look up 
 	  //use this to check if the IP address is valid
-
+	  if(gethostname(ip, sizeof(ip)) != 0){
+		std::cerr<<"Error: invalid IP address\n";
+		return 1;
+	  }
 
 	  // Bind to a port and an address
 	  struct sockaddr_in serverAddr;
 	  serverAddr.sin_family = AF_INET; // use IPv4 address
 	  serverAddr.sin_port = htons(port);  // open a socket on port 4000 of the server
-	  if(ip=="localhost"){
-		serverAddr.sin_addr.s_addr = inet_addr("127.0.1.1"); // use localhost as the IP address of the server to set up the socket
-	  }else{
-		serverAddr.sin_addr.s_addr = inet_addr(ip.c_str()); // use the IP address of the server to set up the socket
-	  }
+	  /* if(ip=="localhost"){ */
+		/* serverAddr.sin_addr.s_addr = inet_addr("127.0.1.1"); // use localhost as the IP address of the server to set up the socket */
+	  /* }else{ */
+		/* serverAddr.sin_addr.s_addr = inet_addr(ip.c_str()); // use the IP address of the server to set up the socket */
+	  /* } */
 	  memset(serverAddr.sin_zero, '\0', sizeof(serverAddr.sin_zero));
 
 	  // connect to the server
