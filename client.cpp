@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
 	  //Make sure it's a valid IP address
 	  //gethostname() function look up 
 	  //use this to check if the IP address is valid
-	  if(gethostname(ip, sizeof(ip)) != 0){
+	  if(gethostname(ip, sizeof(ip)) != 0 && strcmp(ip, "localhost")!=0){
 		std::cerr<<"ERROR: invalid IP address\n";
 		return 1;
 	  }
