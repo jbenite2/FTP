@@ -114,9 +114,9 @@ int main(int argc, char *argv[])
 		return 5;
 	}
 
-	//Read teh file name into a buffer
-	char *fileNameBuffer = new char[filename.length()];
-	memcpy(fileNameBuffer, filename.c_str(), filename.length());
+	//Read the file name into a buffer
+	/* char *fileNameBuffer = new char[filename.length()]; */
+	/* memcpy(fileNameBuffer, filename.c_str(), filename.length()); */
 
     // Read the file into a buffer
     char *buffer = new char[fileSize];
@@ -127,14 +127,14 @@ int main(int argc, char *argv[])
     }
 
 	// Send the file name
-	size_t fileNameSize = filename.length();
-	std::cout << "Sending file name size: " << fileNameSize << std::endl;
-	std::cout << "Sending file name: " << fileNameBuffer << std::endl;
-	if (send(sockfd, fileNameBuffer, fileNameSize, 0) == -1) {
-		perror("send");
-		delete[] buffer;
-		return 6;
-	}
+	/* size_t fileNameSize = filename.length(); */
+	/* std::cout << "Sending file name size: " << fileNameSize << std::endl; */
+	/* std::cout << "Sending file name: " << fileNameBuffer << std::endl; */
+	/* if (send(sockfd, fileNameBuffer, fileNameSize, 0) == -1) { */
+	/* 	perror("send"); */
+	/* 	delete[] buffer; */
+	/* 	return 6; */
+	/* } */
 
     // Send the file
 	size_t bytesSent = send(sockfd, buffer, fileSize, 0);
