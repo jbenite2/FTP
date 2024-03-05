@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
 		std::string directoryPath = std::string(argv[2]);
 		if (mkdir(directoryPath.c_str(), 0777) == -1 && errno != EEXIST) {
 				// Directory doesn't exist, try to create it
-				perror("mkdir");
+				perror("Error creating directory");
 				return 2;
 		}
 		// Open the output file
