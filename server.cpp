@@ -57,6 +57,11 @@ int main(int argc, char *argv[])
   //Explicit error checking
   //Greater than 1023
   //Less than 65535
+  if(port<1024 || port>65534){
+		std::cerr<<"ERROR: invalid port number\n";
+		return 1;
+  }
+
 
   // bind to the address and port and gracefully handle any error
   if (bind(sockfd, (struct sockaddr*)&addr, sizeof(addr)) == -1) {
