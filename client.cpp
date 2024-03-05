@@ -64,11 +64,11 @@ int main(int argc, char *argv[])
 	  struct sockaddr_in serverAddr;
 	  serverAddr.sin_family = AF_INET; // use IPv4 address
 	  serverAddr.sin_port = htons(port);  // open a socket on port 4000 of the server
-	  /* if(ip=="localhost"){ */
-		/* serverAddr.sin_addr.s_addr = inet_addr("127.0.1.1"); // use localhost as the IP address of the server to set up the socket */
-	  /* }else{ */
-		/* serverAddr.sin_addr.s_addr = inet_addr(ip.c_str()); // use the IP address of the server to set up the socket */
-	  /* } */
+	  if(strcmp(ip, "localhost")==0){
+		serverAddr.sin_addr.s_addr = inet_addr("127.0.1.1"); // use localhost as the IP address of the server to set up the socket
+	  }else{
+		serverAddr.sin_addr.s_addr = inet_addr(ip); // use the IP address of the server to set up the socket
+	  }
 	  memset(serverAddr.sin_zero, '\0', sizeof(serverAddr.sin_zero));
 
 	  // connect to the server
