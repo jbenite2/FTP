@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
 
 	  // connect to the server
 	  if (connect(sockfd, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) == -1) {
-		perror("connect");
+		perror("ERROR: connect");
 		return 2;
 	  }
 
