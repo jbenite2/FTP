@@ -57,6 +57,8 @@ int main(int argc, char *argv[])
 		std::cerr<<"ERROR: invalid port number\n";
 		return 1;
 	  }
+
+	  printf("IP address: %s\n", ip);
 	  
 	  //Make sure it's a valid IP address
 	  //gethostname() function look up 
