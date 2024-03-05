@@ -156,5 +156,8 @@ int main(int argc, char *argv[])
     file.close();
     close(sockfd);
 
+	std::cout << "File sent successfully" << std::endl;
+	std::cout << "Connection closed" << std::endl;
+	std::cout << "Client exits with code 0" << std::endl;
     return 0;
 }
