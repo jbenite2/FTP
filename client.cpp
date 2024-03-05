@@ -44,6 +44,12 @@ int main(int argc, char *argv[])
 	  int port = std::stoi(argv[2]);
 	  std::string filename = getLastToken(argv[3], '/');
 
+
+	  //Print all arguments
+	  for (int i = 0; i < argc; i++) {
+		std::cout << "argv[" << i << "] = " << argv[i] << std::endl;
+	  }
+
 	  //Make sure it's a valid port
 	  //Greater than 1023
 	  //Less than 65535
