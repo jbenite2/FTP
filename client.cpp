@@ -63,11 +63,11 @@ int main(int argc, char *argv[])
 	  //Make sure it's a valid IP address
 	  //gethostname() function look up 
 	  //use this to check if the IP address is valid
-	  if(gethostname(ip, sizeof(ip)) != 0 && strcmp(ip, "localhost")!=0){
-		  printf("IP address: %s\n", ip);
-		std::cerr<<"ERROR: invalid IP address\n";
-		return 1;
-	  }
+	  /* if(gethostname(ip, sizeof(ip)) != 0 && strcmp(ip, "localhost")!=0){ */
+		  /* printf("IP address: %s\n", ip); */
+		/* std::cerr<<"ERROR: invalid IP address\n"; */
+		/* return 1; */
+	  /* } */
 
 	  // Bind to a port and an address
 	  struct sockaddr_in serverAddr;
