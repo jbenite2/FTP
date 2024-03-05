@@ -95,15 +95,15 @@ int main(int argc, char *argv[])
 
 
 	  // Receive the file name from the client
-		char filenameBuffer[100] = {0};
-		ssize_t filenameSize = recv(clientSockfd, filenameBuffer, sizeof(filenameBuffer), 0);
-		if (filenameSize == -1) {
-			perror("recv filename");
-			return 5;
-		}
-		std::string filename(filenameBuffer, filenameSize);
-		std::cout << "Received file name: " << filename << std::endl;
-		std::cout << "FILE NAME SIZE: " << filenameSize << std::endl;
+		/* char filenameBuffer[100] = {0}; */
+		/* ssize_t filenameSize = recv(clientSockfd, filenameBuffer, sizeof(filenameBuffer), 0); */
+		/* if (filenameSize == -1) { */
+		/* 	perror("recv filename"); */
+		/* 	return 5; */
+		/* } */
+		/* std::string filename(filenameBuffer, filenameSize); */
+		/* std::cout << "Received file name: " << filename << std::endl; */
+		/* std::cout << "FILE NAME SIZE: " << filenameSize << std::endl; */
 
 
 		/* std::string directoryPath = std::string(argv[2]).substr(1); */
