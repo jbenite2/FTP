@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
 	  //Greater than 1023
 	  //Less than 65535
 	  if(port<1024 || port>65534){
-		std::cerr<<"Error: invalid port number\n";
+		std::cerr<<"ERROR: invalid port number\n";
 		return 1;
 	  }
 	  
@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
 	  //gethostname() function look up 
 	  //use this to check if the IP address is valid
 	  if(gethostname(ip, sizeof(ip)) != 0){
-		std::cerr<<"Error: invalid IP address\n";
+		std::cerr<<"ERROR: invalid IP address\n";
 		return 1;
 	  }
 
