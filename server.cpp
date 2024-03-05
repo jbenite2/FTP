@@ -106,7 +106,8 @@ int main(int argc, char *argv[])
 		std::cout << "FILE NAME SIZE: " << filenameSize << std::endl;
 
 
-		std::string directoryPath = std::string(argv[2]).substr(1);
+		/* std::string directoryPath = std::string(argv[2]).substr(1); */
+		std::string directoryPath = std::string(argv[2]);
 		if (mkdir(directoryPath.c_str(), 0777) == -1 && errno != EEXIST) {
 				// Directory doesn't exist, try to create it
 				perror("mkdir");
