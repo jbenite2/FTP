@@ -4,7 +4,7 @@ CXXFLAGS= -g -Wall -pthread -std=c++11 $(CXXOPTIMIZE)
 USERID=123456789
 CLASSES=
 
-all: server client
+all: server client clean
 
 server: $(CLASSES)
 	$(CXX) -o $@ $^ $(CXXFLAGS) $@.cpp
