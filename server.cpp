@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
     return 3;
   }
 
-  while (1) {
+  /* while (1) { */
 	  // accept a new connection from a client
 	  struct sockaddr_in clientAddr;
 	  socklen_t clientAddrSize = sizeof(clientAddr);
@@ -94,29 +94,12 @@ int main(int argc, char *argv[])
 		ntohs(clientAddr.sin_port) << std::endl;
 
 
-	  // Receive the file name from the client
-		/* char filenameBuffer[100] = {0}; */
-		/* ssize_t filenameSize = recv(clientSockfd, filenameBuffer, sizeof(filenameBuffer), 0); */
-		/* if (filenameSize == -1) { */
-		/* 	perror("recv filename"); */
-		/* 	return 5; */
-		/* } */
-		/* std::string filename(filenameBuffer, filenameSize); */
-		/* std::cout << "Received file name: " << filename << std::endl; */
-		/* std::cout << "FILE NAME SIZE: " << filenameSize << std::endl; */
-
-
 		/* std::string directoryPath = std::string(argv[2]).substr(1); */
 		std::string directoryPath = std::string(argv[2]);
 		int result = mkdir(directoryPath.c_str(), 0777);
 		if (result == -1 && errno != EEXIST) {
 			// Directory doesn't exist, try to create it with sudo
 			std::cerr << "Error creating directory: " << strerror(errno) << std::endl;
-			/* std::string sudoCommand = "sudo mkdir -p " + directoryPath; */
-			/* if (system(sudoCommand.c_str()) == -1) { */
-			/* 	std::cerr << "Failed to execute sudo command." << std::endl; */
-			/* 	return 2; */
-			/* } */
 		}
 		// Open the output file
 		/* std::string filePath = directoryPath+"/"+filename; */
@@ -142,7 +125,7 @@ int main(int argc, char *argv[])
 	 std::cout<<"Message received successfully\n";
 	 shutdown(clientSockfd, SHUT_RDWR);
 	 close(clientSockfd);
-  }
+  /* } */
 
   close(sockfd);
 
