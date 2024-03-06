@@ -105,7 +105,7 @@ int main(int argc, char *argv[])
 
 		// Open the output file
 		/* std::string filePath = directoryPath+"/"+filename; */
-		std::string filePath = directoryPath+"/"+ std::to_string(connectionId) +".file";
+		std::string filePath = directoryPath+ std::to_string(connectionId) +".file";
 		connectionId++;
 		
 		std::fstream outputFile;    
