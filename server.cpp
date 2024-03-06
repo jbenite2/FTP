@@ -1,4 +1,3 @@
-/* #include <sys/_select.h> */
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -51,8 +50,7 @@ int main(int argc, char *argv[])
   struct sockaddr_in addr;
   addr.sin_family = AF_INET;
   addr.sin_port = htons(port); // the server will listen on port 4000
-  /* addr.sin_addr.s_addr = inet_addr("127.0.1.1"); // open socket on localhost IP address for server */
-  addr.sin_addr.s_addr = htonl(INADDR_ANY); // open socket on localhost IP address for server
+  addr.sin_addr.s_addr = htonl(INADDR_ANY);  // open socket on localhost IP address for server
   memset(addr.sin_zero, '\0', sizeof(addr.sin_zero));
 
   //Explicit error checking
@@ -97,13 +95,11 @@ int main(int argc, char *argv[])
 
 		/* std::string directoryPath = std::string(argv[2]).substr(1); */
 		std::string directoryPath = std::string(argv[2]);
-		/* int result = mkdir(directoryPath.c_str(), 0777); */
-
-		/* if (result == -1 && errno != EEXIST) { */
-		/* 	// Directory doesn't exist, try to create it with sudo */
-		/* 	std::cerr << "Error creating directory: " << strerror(errno) << std::endl; */
-		/* } */
-
+		int result = mkdir(directoryPath.c_str(), 0777);
+		if (result == -1 && errno != EEXIST) {
+			// Directory doesn't exist, try to create it with sudo
+			std::cerr << "Error creating directory: " << strerror(errno) << std::endl;
+		}
 		// Open the output file
 		/* std::string filePath = directoryPath+"/"+filename; */
 		std::string filePath = directoryPath+"/"+ std::to_string(connectionId) +".file";
