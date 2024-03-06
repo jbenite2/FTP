@@ -112,11 +112,11 @@ int main(int argc, char *argv[])
 		if (result == -1 && errno != EEXIST) {
 			// Directory doesn't exist, try to create it with sudo
 			std::cerr << "Error creating directory: " << strerror(errno) << std::endl;
-			std::string sudoCommand = "sudo mkdir -p " + directoryPath;
-			if (system(sudoCommand.c_str()) == -1) {
-				std::cerr << "Failed to execute sudo command." << std::endl;
-				return 2;
-			}
+			/* std::string sudoCommand = "sudo mkdir -p " + directoryPath; */
+			/* if (system(sudoCommand.c_str()) == -1) { */
+			/* 	std::cerr << "Failed to execute sudo command." << std::endl; */
+			/* 	return 2; */
+			/* } */
 		}
 		// Open the output file
 		/* std::string filePath = directoryPath+"/"+filename; */
