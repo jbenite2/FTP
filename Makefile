@@ -4,17 +4,17 @@ CXXFLAGS= -g -Wall -pthread -std=c++11 $(CXXOPTIMIZE)
 USERID=123456789
 CLASSES=
 
-all: clean server client
+all: server client
 
 server: $(CLASSES)
-	$(CXX) -o $@ $^ $(CXXFLAGS) $@.cpp
+    $(CXX) -o $@ $^ $(CXXFLAGS) $@.cpp
 
 client: $(CLASSES)
-	$(CXX) -o $@ $^ $(CXXFLAGS) $@.cpp
+    $(CXX) -o $@ $^ $(CXXFLAGS) $@.cpp
 
 clean:
-	rm -rf *.o *~ *.gch *.swp *.dSYM server client *.tar.gz
+    rm -rf *.o *~ *.gch *.swp *.dSYM server client *.tar.gz
 
 dist: tarball
 tarball: clean
-	tar -cvzf /tmp/$(USERID).tar.gz --exclude=./.vagrant . && mv /tmp/$(USERID).tar.gz .
+    tar -cvzf /tmp/$(USERID).tar.gz --exclude=./.vagrant . && mv /tmp/$(USERID).tar.gz .
