@@ -27,6 +27,8 @@ fi
 # Copy files to the submission directory
 cp "client.cpp" "$directory"
 cp "server.cpp" "$directory"
+cp "Makefile" "$directory"
+
 
 # Check if the file copying was successful
 if [ $? -ne 0 ]; then
