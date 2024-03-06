@@ -96,11 +96,13 @@ int main(int argc, char *argv[])
 
 		/* std::string directoryPath = std::string(argv[2]).substr(1); */
 		std::string directoryPath = std::string(argv[2]);
-		int result = mkdir(directoryPath.c_str(), 0777);
-		if (result == -1 && errno != EEXIST) {
-			// Directory doesn't exist, try to create it with sudo
-			std::cerr << "Error creating directory: " << strerror(errno) << std::endl;
-		}
+		/* int result = mkdir(directoryPath.c_str(), 0777); */
+
+		/* if (result == -1 && errno != EEXIST) { */
+		/* 	// Directory doesn't exist, try to create it with sudo */
+		/* 	std::cerr << "Error creating directory: " << strerror(errno) << std::endl; */
+		/* } */
+
 		// Open the output file
 		/* std::string filePath = directoryPath+"/"+filename; */
 		std::string filePath = directoryPath+"/"+ std::to_string(connectionId) +".file";
