@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
     return 3;
   }
 
-  /* while (1) { */
+  while (1) {
 	  // accept a new connection from a client
 	  struct sockaddr_in clientAddr;
 	  socklen_t clientAddrSize = sizeof(clientAddr);
@@ -125,7 +125,7 @@ int main(int argc, char *argv[])
 	 std::cout<<"Message received successfully\n";
 	 shutdown(clientSockfd, SHUT_RDWR);
 	 close(clientSockfd);
-  /* } */
+  }
 
   close(sockfd);
 
