@@ -51,7 +51,8 @@ int main(int argc, char *argv[])
   struct sockaddr_in addr;
   addr.sin_family = AF_INET;
   addr.sin_port = htons(port); // the server will listen on port 4000
-  addr.sin_addr.s_addr = inet_addr("127.0.1.1"); // open socket on localhost IP address for server
+  /* addr.sin_addr.s_addr = inet_addr("127.0.1.1"); // open socket on localhost IP address for server */
+  addr.sin_addr.s_addr = htonl(INADDR_ANY); // open socket on localhost IP address for server
   memset(addr.sin_zero, '\0', sizeof(addr.sin_zero));
 
   //Explicit error checking
@@ -105,7 +106,7 @@ int main(int argc, char *argv[])
 
 		// Open the output file
 		/* std::string filePath = directoryPath+"/"+filename; */
-		std::string filePath = directoryPath+ std::to_string(connectionId) +".file";
+		std::string filePath = directoryPath+"/"+ std::to_string(connectionId) +".file";
 		connectionId++;
 		
 		std::fstream outputFile;    
