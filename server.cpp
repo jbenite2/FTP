@@ -139,11 +139,6 @@ int main(int argc, char *argv[])
 	  std::cout << "Bytes received: " << valread << '\n';
 	  outputFile.write(buffer.data(), valread);
 
-	 std::string message= "Hello from server!";
-	  if(send(clientSockfd, message.c_str(), message.length(), 0)==-1){
-		  perror("send");
-		  return 8;
-	  }
 	 std::cout<<"Message received successfully\n";
 	 shutdown(clientSockfd, SHUT_RDWR);
 	 close(clientSockfd);
