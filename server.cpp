@@ -26,24 +26,25 @@ void signalHandler(int signal) {
 
 int main(int argc, char *argv[])
 {
+  //Server handles SIGTERM / SIGQUIT signals
 	signal(SIGQUIT, signalHandler);
 	signal(SIGTERM, signalHandler);
 
-  // create a socket using TCP IP
-  int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+  // Create a socket using TCP IP
+	int sockfd = socket(AF_INET, SOCK_STREAM, 0);
 
-  // allow others to reuse the address
-  int yes = 1;
-  if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1) {
-    perror("setsockopt");
-    return 1;
-  }
+  // Allow others to reuse the address
+	int yes = 1;
+	if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1) {
+		perror("setsockopt");
+		return 1;
+	}
 
   // Bind to a port and an address
-  if(argc!=3){
-	  std::cerr<<"Error: incorrect number of arguments\n";
-	  return 1;
-  }
+	if(argc!=3){
+		std::cerr<<"Error: incorrect number of arguments\n";
+		return 1;
+	}
 
   int port = std::stoi(argv[1]);
 

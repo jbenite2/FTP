@@ -46,15 +46,11 @@ int main(int argc, char *argv[])
 
 
 	  //Make sure it's a valid port
-	  //Greater than 1023
-	  //Less than 65535
 	  if(port<1024 || port>65534){
 		std::cerr<<"ERROR: invalid port number\n";
 		return 1;
 	  }
 
-	  printf("IP address: %s\n", ip);
-	  
 	  //Make sure it's a valid IP address
 	  //gethostname() function look up 
 	  //use this to check if the IP address is valid
@@ -125,16 +121,6 @@ int main(int argc, char *argv[])
         delete[] buffer;
         return 5;
     }
-
-	// Send the file name
-	/* size_t fileNameSize = filename.length(); */
-	/* std::cout << "Sending file name size: " << fileNameSize << std::endl; */
-	/* std::cout << "Sending file name: " << fileNameBuffer << std::endl; */
-	/* if (send(sockfd, fileNameBuffer, fileNameSize, 0) == -1) { */
-	/* 	perror("send"); */
-	/* 	delete[] buffer; */
-	/* 	return 6; */
-	/* } */
 
     // Send the file
 	size_t bytesSent = send(sockfd, buffer, fileSize, 0);
