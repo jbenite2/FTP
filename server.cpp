@@ -1,3 +1,4 @@
+#include <iostream>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -9,11 +10,7 @@
 #include <fstream>
 #include <sys/stat.h>
 #include <vector>
-
-#include <iostream>
-#include <sstream>
-#include <string>
-#include <csignal>
+#include <signal.h>
 
 int terminateSignalReceived = 0;
 int connectionId = 1;
@@ -24,120 +21,122 @@ void signalHandler(int signal) {
     }
 }
 
-int main(int argc, char *argv[])
-{
-  //Server handles SIGTERM / SIGQUIT signals
-	signal(SIGQUIT, signalHandler);
-	signal(SIGTERM, signalHandler);
+int main(int argc, char *argv[]) {
+    // Server handles SIGTERM / SIGQUIT signals
+    signal(SIGQUIT, signalHandler);
+    signal(SIGTERM, signalHandler);
 
-  // Create a socket using TCP IP
-	int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    // Create a socket using TCP IP
+    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
 
-  // Allow others to reuse the address
-	int yes = 1;
-	if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1) {
-		perror("setsockopt");
-		return 1;
-	}
+    // Allow others to reuse the address
+    int yes = 1;
+    if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1) {
+        perror("setsockopt");
+        return 1;
+    }
 
-  // Bind to a port and an address
-	if(argc!=3){
-		std::cerr<<"Error: incorrect number of arguments\n";
-		return 1;
-	}
+    // Bind to a port and an address
+    if (argc != 3) {
+        std::cerr << "Error: incorrect number of arguments\n";
+        return 1;
+    }
 
-  int port = std::stoi(argv[1]);
+    int port = std::stoi(argv[1]);
 
-  struct sockaddr_in addr;
-  addr.sin_family = AF_INET;
-  addr.sin_port = htons(port); // the server will listen on port 4000
-  addr.sin_addr.s_addr = htonl(INADDR_ANY);  // open socket on localhost IP address for server
-  memset(addr.sin_zero, '\0', sizeof(addr.sin_zero));
+    struct sockaddr_in addr;
+    addr.sin_family = AF_INET;
+    addr.sin_port = htons(port);
+    addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    memset(addr.sin_zero, '\0', sizeof(addr.sin_zero));
 
-  //Explicit error checking
-  //Greater than 1023
-  //Less than 65535
-  if(port<1024 || port>65534){
-		std::cerr<<"ERROR: invalid port number\n";
-		return 1;
-  }
+    if (port < 1024 || port > 65534) {
+        std::cerr << "ERROR: invalid port number\n";
+        return 1;
+    }
 
+    if (bind(sockfd, (struct sockaddr*)&addr, sizeof(addr)) == -1) {
+        perror("bind");
+        return 2;
+    }
 
-  // bind to the address and port and gracefully handle any error
-  if (bind(sockfd, (struct sockaddr*)&addr, sizeof(addr)) == -1) {
-    perror("bind");
-    return 2;
-  }
+    if (listen(sockfd, 1) == -1) {
+        perror("listen");
+        return 3;
+    }
 
-  // set socket to listen status
-  if (listen(sockfd, 1) == -1) {
-    perror("listen");
-    return 3;
-  }
+    while (!terminateSignalReceived) {
+        fd_set readfds;
+        FD_ZERO(&readfds);
+        FD_SET(sockfd, &readfds);
 
-  while (1) {
-		// accept a new connection from a client
-		struct sockaddr_in clientAddr;
-		socklen_t clientAddrSize = sizeof(clientAddr);
-		int clientSockfd = accept(sockfd, (struct sockaddr*)&clientAddr, &clientAddrSize);
-	  
-		/* select(clientSockfd+1, vfd_set *, fd_set *, fd_set *, struct timeval *); */
+        struct timeval timeout;
+        timeout.tv_sec = 10;
+        timeout.tv_usec = 0;
 
-		if (clientSockfd == -1) {
-			perror("accept");
-			return 4;
-		}
+        // Wait for connection with a timeout of 10 seconds
+        int ready = select(sockfd + 1, &readfds, NULL, NULL, &timeout);
+        if (ready == -1) {
+            perror("select");
+            return 4;
+        } else if (ready == 0) {
+            // Timeout occurred
+            continue;
+        }
 
-		char ipstr[INET_ADDRSTRLEN] = {'\0'};
-		inet_ntop(clientAddr.sin_family, &clientAddr.sin_addr, ipstr, sizeof(ipstr));
-		std::cout << "Accept a connection from: " << ipstr << ":" <<
-		ntohs(clientAddr.sin_port) << std::endl;
+        if (FD_ISSET(sockfd, &readfds)) {
+            // Accept a new connection from a client
+            struct sockaddr_in clientAddr;
+            socklen_t clientAddrSize = sizeof(clientAddr);
+            int clientSockfd = accept(sockfd, (struct sockaddr*)&clientAddr, &clientAddrSize);
 
+            if (clientSockfd == -1) {
+                perror("accept");
+                return 5;
+            }
 
-		/* std::string directoryPath = std::string(argv[2]).substr(1); */
-		std::string directoryPath = std::string(argv[2]);
-		int result = mkdir(directoryPath.c_str(), 0777);
-		if (result == -1 && errno != EEXIST) {
-			// Directory doesn't exist, try to create it with sudo
-			std::cerr << "Error creating directory: " << strerror(errno) << std::endl;
-		}
-		// Open the output file
-		/* std::string filePath = directoryPath+"/"+filename; */
-		std::string filePath = directoryPath+"/"+ std::to_string(connectionId) +".file";
-		connectionId++;
-		
-		std::fstream outputFile;    
-	  outputFile.open(filePath, std::ios::out);
-	  if (!outputFile.is_open()) {
-		std::cerr << "Error: cannot open the file (" << filePath << ")" << std::endl;
-		return 6;
-	  }
-	
-	  // Receive data until there is nothing left
-		std::vector<char> buffer(1024);
-		ssize_t bytesRead; 
+            char ipstr[INET_ADDRSTRLEN] = {'\0'};
+            inet_ntop(clientAddr.sin_family, &clientAddr.sin_addr, ipstr, sizeof(ipstr));
+            std::cout << "Accept a connection from: " << ipstr << ":" << ntohs(clientAddr.sin_port) << std::endl;
 
-		while((bytesRead = recv(clientSockfd, buffer.data(), buffer.size(), 0))> 0){
+            std::string directoryPath = std::string(argv[2]);
+            int result = mkdir(directoryPath.c_str(), 0777);
+            if (result == -1 && errno != EEXIST) {
+                std::cerr << "Error creating directory: " << strerror(errno) << std::endl;
+            }
 
-			//Error Checking
-			if (bytesRead == -1) {
-				perror("Error while receiving data");
-				return 7;
-			}
-	
-			//Debugging
-			std::cout << "Bytes received: " << bytesRead << '\n';
+            std::string filePath = directoryPath + "/" + std::to_string(connectionId) + ".file";
+            connectionId++;
 
-			// Write the data to the file
-			outputFile.write(buffer.data(), bytesRead);
-		};
+            std::fstream outputFile;
+            outputFile.open(filePath, std::ios::out);
+            if (!outputFile.is_open()) {
+                std::cerr << "Error: cannot open the file (" << filePath << ")" << std::endl;
+                return 6;
+            }
 
-	 std::cout<<"Message received successfully\n";
-	 shutdown(clientSockfd, SHUT_RDWR);
-	 close(clientSockfd);
-  }
+            std::vector<char> buffer(1024);
+            ssize_t bytesRead;
 
-  close(sockfd);
+            while ((bytesRead = recv(clientSockfd, buffer.data(), buffer.size(), 0)) > 0) {
+                if (bytesRead == -1) {
+                    perror("Error while receiving data");
+                    return 7;
+                }
 
-  return 0;
+                std::cout << "Bytes received: " << bytesRead << '\n';
+
+                outputFile.write(buffer.data(), bytesRead);
+            }
+
+            std::cout << "Message received successfully\n";
+            shutdown(clientSockfd, SHUT_RDWR);
+            close(clientSockfd);
+        }
+    }
+
+    close(sockfd);
+
+    return 0;
 }
+
