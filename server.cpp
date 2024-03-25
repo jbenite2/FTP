@@ -75,21 +75,21 @@ int main(int argc, char *argv[])
   }
 
   while (1) {
-	  // accept a new connection from a client
-	  struct sockaddr_in clientAddr;
-	  socklen_t clientAddrSize = sizeof(clientAddr);
-	  int clientSockfd = accept(sockfd, (struct sockaddr*)&clientAddr, &clientAddrSize);
+		// accept a new connection from a client
+		struct sockaddr_in clientAddr;
+		socklen_t clientAddrSize = sizeof(clientAddr);
+		int clientSockfd = accept(sockfd, (struct sockaddr*)&clientAddr, &clientAddrSize);
 	  
-	  /* select(clientSockfd+1, vfd_set *, fd_set *, fd_set *, struct timeval *); */
+		/* select(clientSockfd+1, vfd_set *, fd_set *, fd_set *, struct timeval *); */
 
-	  if (clientSockfd == -1) {
-		perror("accept");
-		return 4;
-	  }
+		if (clientSockfd == -1) {
+			perror("accept");
+			return 4;
+		}
 
-	  char ipstr[INET_ADDRSTRLEN] = {'\0'};
-	  inet_ntop(clientAddr.sin_family, &clientAddr.sin_addr, ipstr, sizeof(ipstr));
-	  std::cout << "Accept a connection from: " << ipstr << ":" <<
+		char ipstr[INET_ADDRSTRLEN] = {'\0'};
+		inet_ntop(clientAddr.sin_family, &clientAddr.sin_addr, ipstr, sizeof(ipstr));
+		std::cout << "Accept a connection from: " << ipstr << ":" <<
 		ntohs(clientAddr.sin_port) << std::endl;
 
 
@@ -111,15 +111,25 @@ int main(int argc, char *argv[])
 		std::cerr << "Error: cannot open the file (" << filePath << ")" << std::endl;
 		return 6;
 	  }
+	
+	  // Receive data until there is nothing left
+		std::vector<char> buffer(1024);
+		ssize_t bytesRead; 
 
-	  std::vector<char> buffer(100*1024*1024, 0);
-	  ssize_t valread = recv(clientSockfd, buffer.data(), buffer.size(), 0);
-	  if (valread == -1) {
-		perror("recv");
-		return 7;
-	  }
-	  std::cout << "Bytes received: " << valread << '\n';
-	  outputFile.write(buffer.data(), valread);
+		while((bytesRead = recv(clientSockfd, buffer.data(), buffer.size(), 0))> 0){
+
+			//Error Checking
+			if (bytesRead == -1) {
+				perror("Error while receiving data");
+				return 7;
+			}
+	
+			//Debugging
+			std::cout << "Bytes received: " << bytesRead << '\n';
+
+			// Write the data to the file
+			outputFile.write(buffer.data(), bytesRead);
+		};
 
 	 std::cout<<"Message received successfully\n";
 	 shutdown(clientSockfd, SHUT_RDWR);
