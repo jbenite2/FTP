@@ -107,15 +107,15 @@ int main(int argc, char *argv[]) {
 			setsockopt(clientSockfd, SOL_SOCKET,SO_RCVTIMEO, (const char*)&timeout, sizeof(timeout));
 
             while ((bytesRead = recv(clientSockfd, buffer.data(), buffer.size(), 0)) > 0) {
-                if (bytesRead == -1) {
+                if (bytesRead < 0) {
 					if (errno == EAGAIN || errno == EWOULDBLOCK) {
-						std::cerr << "ERROR: Timeout occurred. No data recieved." << std::endl; 
+						std::cerr << "ERROR: Timeout occurred. " << std::endl; 
 						outputFile.seekp(0) ;
 						outputFile.clear();
 						outputFile<<"ERROR";
+						break;
 					}
                 } else if (bytesRead == 0) {
-					// client closed connection
 					break;
 				} else {
 					outputFile.write(buffer.data(), bytesRead);
@@ -123,6 +123,7 @@ int main(int argc, char *argv[]) {
             }
 
             std::cout << "Message received successfully\n";
+			outputFile.close();
             shutdown(clientSockfd, SHUT_RDWR);
             close(clientSockfd);
         }
