@@ -66,32 +66,17 @@ int main(int argc, char *argv[]) {
     }
 
     while (!terminateSignalReceived) {
-        fd_set readfds;
-        FD_ZERO(&readfds);
-        FD_SET(sockfd, &readfds);
 
-        struct timeval timeout;
-        timeout.tv_sec = 10;
-        timeout.tv_usec = 0;
-
-
-        // Wait for connection with a timeout of 10 seconds
-        /* int ready = select(sockfd + 1, &readfds, NULL, NULL, &timeout); */
-        /* if (ready == -1) { */
-        /*     perror("select"); */
-        /*     return 4; */
-        /* } else if (ready == 0) { */
-        /*     // Timeout occurred */
-        /*     continue; */
-        /* } */
-
+		fd_set readfds;
+		FD_ZERO(&readfds);
+		FD_SET(sockfd, &readfds);
+   
         if (FD_ISSET(sockfd, &readfds)) {
             // Accept a new connection from a client
             struct sockaddr_in clientAddr;
             socklen_t clientAddrSize = sizeof(clientAddr);
             int clientSockfd = accept(sockfd, (struct sockaddr*)&clientAddr, &clientAddrSize);
 			
-			setsockopt(clientSockfd, SOL_SOCKET,SO_SNDTIMEO, (const char*)&timeout, sizeof(struct timeval));
 
 			bool timeOutOccured = false;
 
@@ -123,6 +108,12 @@ int main(int argc, char *argv[]) {
 
             std::vector<char> buffer(1024);
             ssize_t bytesRead;
+
+			struct timeval timeout;
+			timeout.tv_sec = 10;
+			timeout.tv_usec = 0;
+
+			setsockopt(clientSockfd, SOL_SOCKET,SO_SNDTIMEO, (const char*)&timeout, sizeof(struct timeval));
 
             while ((bytesRead = recv(clientSockfd, buffer.data(), buffer.size(), 0)) > 0) {
                 /* if (bytesRead == -1) { */
