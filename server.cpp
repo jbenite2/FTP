@@ -65,13 +65,13 @@ int main(int argc, char *argv[]) {
         return 3;
     }
 
-    while (!terminateSignalReceived) {
+    while (1) {
 
 		fd_set readfds;
 		FD_ZERO(&readfds);
 		FD_SET(sockfd, &readfds);
    
-        if (FD_ISSET(sockfd, &readfds)) {
+		if (FD_ISSET(sockfd, &readfds)) {
             // Accept a new connection from a client
             struct sockaddr_in clientAddr;
             socklen_t clientAddrSize = sizeof(clientAddr);
