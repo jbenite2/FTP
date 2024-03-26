@@ -13,7 +13,6 @@
 #include <signal.h>
 
 int terminateSignalReceived = 0;
-int connectionId = 1;
 
 void signalHandler(int signal) {
     if (signal == SIGQUIT || signal == SIGTERM) {
@@ -64,6 +63,8 @@ int main(int argc, char *argv[]) {
         perror("listen");
         return 3;
     }
+
+	int connectionId = 1;
 
     while (1) {
 
