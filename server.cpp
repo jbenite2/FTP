@@ -76,15 +76,9 @@ int main(int argc, char *argv[]) {
             struct sockaddr_in clientAddr;
             socklen_t clientAddrSize = sizeof(clientAddr);
             int clientSockfd = accept(sockfd, (struct sockaddr*)&clientAddr, &clientAddrSize);
-			
 
 			bool timeOutOccured = false;
 
-            if (clientSockfd == -1 && (errno == EAGAIN || errno == EWOULDBLOCK)) {
-					timeOutOccured = true;
-                /* perror("accept"); */
-                /* return 5; */
-            }
 
             char ipstr[INET_ADDRSTRLEN] = {'\0'};
             inet_ntop(clientAddr.sin_family, &clientAddr.sin_addr, ipstr, sizeof(ipstr));
@@ -116,15 +110,17 @@ int main(int argc, char *argv[]) {
 			setsockopt(clientSockfd, SOL_SOCKET,SO_SNDTIMEO, (const char*)&timeout, sizeof(struct timeval));
 
             while ((bytesRead = recv(clientSockfd, buffer.data(), buffer.size(), 0)) > 0) {
-                /* if (bytesRead == -1) { */
-                /*     perror("Error while receiving data"); */
-                /*     return 7; */
-                /* } */
-
-                std::cout << "Bytes received: " << bytesRead << '\n';
-
-				if (timeOutOccured) {
-					outputFile.write("ERROR", 5);
+                if (bytesRead == -1) {
+					if (errno == EAGAIN || errno == EWOULDBLOCK) {
+						    std::cerr << "ERROR: Timeout occurred. No data recieved." << std::endl; 
+							outputFile.seekp(0) ;
+							outputFile.clear();
+							timeOutOccured = true;
+							outputFile<<"ERROR";
+					}
+                } else if (bytesRead == 0) {
+					// client closed connection
+					break;
 				} else {
 					outputFile.write(buffer.data(), bytesRead);
 				}
