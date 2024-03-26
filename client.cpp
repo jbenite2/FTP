@@ -158,16 +158,17 @@ int main(int argc, char *argv[]) {
 
     // Send the file
     size_t bytesSent = send(sockfd, buffer, fileSize, 0);
-    if (bytesSent <= 0) {
-        if (serverDisconnected) {
-            std::cerr << "ERROR: Server disconnected\n";
-        } else {
-            perror("send");
-        }
-        delete[] buffer;
-        close(sockfd);
-        return 9;
-    }
+	if (bytesSent <= 0) {
+		if (errno == EPIPE) {
+			std::cerr << "ERROR: Server disconnected\n";
+		} else {
+			perror("send");
+		}
+		delete[] buffer;
+		close(sockfd);
+		return 9;
+	}
+
 
     std::cout << "Sent " << bytesSent << " bytes" << std::endl;
 
