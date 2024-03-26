@@ -11,6 +11,8 @@
 #include <sstream>
 #include <string>
 #include <signal.h>
+#include <netdb.h>
+#include <sys/time.h>
 
 std::string getLastToken(const std::string& str, char delimiter) {
     std::istringstream iss(str);
@@ -67,14 +69,28 @@ int main(int argc, char *argv[]) {
     }
     memset(serverAddr.sin_zero, '\0', sizeof(serverAddr.sin_zero));
 
-    // Connect to the server with a timeout of 10 seconds
-    struct timeval timeout;
-    timeout.tv_sec = 10;
-    timeout.tv_usec = 0;
+	struct addrinfo hints, *result;
+	memset(&hints, 0, sizeof(hints));
+	hints.ai_family = AF_INET;
+	hints.ai_socktype = SOCK_STREAM;
+	hints.ai_protocol = 0;
+	hints.ai_flags = AI_PASSIVE;
+
+	int state;
+	std::string portStr = std::to_string(port);
+	if((state = getaddrinfo(ip, portStr.c_str(), &hints, &result)) != 0) {
+		std::cerr << "ERROR: getaddrinfo: " << gai_strerror(state) << std::endl;
+		return 2;
+	}
+
 
     fd_set writefds;
     FD_ZERO(&writefds);
     FD_SET(sockfd, &writefds);
+
+    struct timeval timeout;
+    timeout.tv_sec = 10;
+    timeout.tv_usec = 0;
 
 	setsockopt(sockfd, SOL_SOCKET,SO_SNDTIMEO, (const char*)&timeout, sizeof(struct timeval));
 
@@ -87,8 +103,10 @@ int main(int argc, char *argv[]) {
     if (connect(sockfd, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) == -1) {
         perror("ERROR: connect");
         close(sockfd);
+		freeaddrinfo(result);
         return 3;
     }
+	freeaddrinfo(result);
 
     // Set up signal handler for SIGPIPE (server disconnect)
     signal(SIGPIPE, signalHandler);
