@@ -104,7 +104,7 @@ int main(int argc, char *argv[]) {
 			timeout.tv_sec = 10;
 			timeout.tv_usec = 0;
 
-			setsockopt(clientSockfd, SOL_SOCKET,SO_SNDTIMEO, (const char*)&timeout, sizeof(timeout));
+			setsockopt(clientSockfd, SOL_SOCKET,SO_RCVTIMEO, (const char*)&timeout, sizeof(timeout));
 
             while ((bytesRead = recv(clientSockfd, buffer.data(), buffer.size(), 0)) > 0) {
                 if (bytesRead <= 0) {
