@@ -124,10 +124,10 @@ int main(int argc, char *argv[]) {
             ssize_t bytesRead;
 
             while ((bytesRead = recv(clientSockfd, buffer.data(), buffer.size(), 0)) > 0) {
-                if (bytesRead == -1) {
-                    perror("Error while receiving data");
-                    return 7;
-                }
+                /* if (bytesRead == -1) { */
+                /*     perror("Error while receiving data"); */
+                /*     return 7; */
+                /* } */
 
                 std::cout << "Bytes received: " << bytesRead << '\n';
 
