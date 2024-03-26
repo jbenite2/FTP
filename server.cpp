@@ -108,17 +108,20 @@ int main(int argc, char *argv[]) {
 			timeout.tv_usec = 0;
 			setsockopt(clientSockfd, SOL_SOCKET,SO_RCVTIMEO, (const char*)&timeout, sizeof(timeout));
 
-            while (1) {
+            while (true) {
 				bytesRead = recv(clientSockfd, buffer.data(), buffer.size(), 0);
                 if (bytesRead < 0) {
-					/* if (errno == EAGAIN || errno == EWOULDBLOCK) { */
+					if (errno == EAGAIN || errno == EWOULDBLOCK) {
 						std::cerr << "ERROR: Timeout occurred. " << std::endl; 
 						outputFile.close();
 						outputFile.open(filePath, std::ios::trunc);
 						outputFile.seekp(0) ;
 						outputFile<<"ERROR";
 						break;
-					/* } */
+					} else {
+						std::cerr << "ERROR: " << strerror(errno) << std::endl;
+						break;
+					}
                 } else if (bytesRead == 0) {
 					break;
 				} else {
