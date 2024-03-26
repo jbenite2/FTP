@@ -112,7 +112,8 @@ int main(int argc, char *argv[]) {
                 if (bytesRead < 0) {
 					if (errno == EAGAIN || errno == EWOULDBLOCK) {
 						std::cerr << "ERROR: Timeout occurred. " << std::endl; 
-						outputFile.trunc();
+						outputFile.close();
+						outputFile.open(filePath, std::ios::trunc);
 						outputFile.seekp(0) ;
 						outputFile<<"ERROR";
 						break;
