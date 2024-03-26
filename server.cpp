@@ -106,8 +106,6 @@ int main(int argc, char *argv[]) {
 
 			setsockopt(clientSockfd, SOL_SOCKET,SO_SNDTIMEO, (const char*)&timeout, sizeof(timeout));
 
-			break;
-
             while ((bytesRead = recv(clientSockfd, buffer.data(), buffer.size(), 0)) > 0) {
                 if (bytesRead <= 0) {
 					/* if (errno == EAGAIN || errno == EWOULDBLOCK) { */
