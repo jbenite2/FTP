@@ -108,7 +108,8 @@ int main(int argc, char *argv[]) {
 			timeout.tv_usec = 0;
 			setsockopt(clientSockfd, SOL_SOCKET,SO_RCVTIMEO, (const char*)&timeout, sizeof(timeout));
 
-            while ((bytesRead = recv(clientSockfd, buffer.data(), buffer.size(), 0)) > 0) {
+            while (1) {
+				bytesRead = recv(clientSockfd, buffer.data(), buffer.size(), 0);
                 if (bytesRead < 0) {
 					/* if (errno == EAGAIN || errno == EWOULDBLOCK) { */
 						std::cerr << "ERROR: Timeout occurred. " << std::endl; 
