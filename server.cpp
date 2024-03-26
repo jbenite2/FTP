@@ -109,10 +109,10 @@ int main(int argc, char *argv[]) {
             while ((bytesRead = recv(clientSockfd, buffer.data(), buffer.size(), 0)) > 0) {
                 if (bytesRead == -1) {
 					if (errno == EAGAIN || errno == EWOULDBLOCK) {
-						    std::cerr << "ERROR: Timeout occurred. No data recieved." << std::endl; 
-							outputFile.seekp(0) ;
-							outputFile.clear();
-							outputFile<<"ERROR";
+						std::cerr << "ERROR: Timeout occurred. No data recieved." << std::endl; 
+						outputFile.seekp(0) ;
+						outputFile.clear();
+						outputFile<<"ERROR";
 					}
                 } else if (bytesRead == 0) {
 					// client closed connection
