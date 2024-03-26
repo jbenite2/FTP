@@ -115,6 +115,7 @@ int main(int argc, char *argv[]) {
 					if (errno == EAGAIN || errno == EWOULDBLOCK) {
 						std::cerr << "ERROR: Timeout occurred. " << std::endl; 
 						outputFile.close();
+						remove(filePath.c_str());
 						outputFile.open(filePath, std::ios::trunc);
 						outputFile.seekp(0) ;
 						outputFile<<"ERROR";
