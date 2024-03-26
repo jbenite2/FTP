@@ -74,7 +74,6 @@ int main(int argc, char *argv[]) {
         timeout.tv_sec = 10;
         timeout.tv_usec = 0;
 
-		setsockopt(sockfd, SOL_SOCKET,SO_SNDTIMEO, (const char*)&timeout, sizeof(struct timeval));
 
         // Wait for connection with a timeout of 10 seconds
         /* int ready = select(sockfd + 1, &readfds, NULL, NULL, &timeout); */
@@ -91,6 +90,8 @@ int main(int argc, char *argv[]) {
             struct sockaddr_in clientAddr;
             socklen_t clientAddrSize = sizeof(clientAddr);
             int clientSockfd = accept(sockfd, (struct sockaddr*)&clientAddr, &clientAddrSize);
+			
+			setsockopt(clientSockfd, SOL_SOCKET,SO_SNDTIMEO, (const char*)&timeout, sizeof(struct timeval));
 
 			bool timeOutOccured = false;
 
