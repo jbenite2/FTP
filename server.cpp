@@ -92,9 +92,12 @@ int main(int argc, char *argv[]) {
             socklen_t clientAddrSize = sizeof(clientAddr);
             int clientSockfd = accept(sockfd, (struct sockaddr*)&clientAddr, &clientAddrSize);
 
-            if (clientSockfd == -1) {
-                perror("accept");
-                return 5;
+			bool timeOutOccured = false;
+
+            if (clientSockfd == -1 && (errno == EAGAIN || errno == EWOULDBLOCK)) {
+					timeOutOccured = true;
+                /* perror("accept"); */
+                /* return 5; */
             }
 
             char ipstr[INET_ADDRSTRLEN] = {'\0'};
@@ -128,7 +131,11 @@ int main(int argc, char *argv[]) {
 
                 std::cout << "Bytes received: " << bytesRead << '\n';
 
-                outputFile.write(buffer.data(), bytesRead);
+				if (timeOutOccured) {
+					outputFile.write("ERROR", 5);
+				} else {
+					outputFile.write(buffer.data(), bytesRead);
+				}
             }
 
             std::cout << "Message received successfully\n";
