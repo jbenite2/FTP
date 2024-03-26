@@ -110,12 +110,12 @@ int main(int argc, char *argv[]) {
                 if (bytesRead == -1) {
 					return 7;	
                 } else if (bytesRead == 0) {
-					if (errno == EAGAIN || errno == EWOULDBLOCK) {
-						std::cerr << "ERROR: Timeout occurred. No data recieved." << std::endl; 
-						outputFile.seekp(0) ;
-						outputFile.clear();
-						outputFile<<"ERROR";
-					}
+					/* if (errno == EAGAIN || errno == EWOULDBLOCK) { */
+					std::cerr << "ERROR: Timeout occurred. No data recieved." << std::endl; 
+					outputFile.seekp(0) ;
+					outputFile.clear();
+					outputFile<<"ERROR";
+					/* } */
 				} else {
 					outputFile.write(buffer.data(), bytesRead);
 				}
