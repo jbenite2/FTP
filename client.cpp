@@ -76,11 +76,13 @@ int main(int argc, char *argv[]) {
     FD_ZERO(&writefds);
     FD_SET(sockfd, &writefds);
 
-    if (select(sockfd + 1, NULL, &writefds, NULL, &timeout) <= 0 || !FD_ISSET(sockfd, &writefds)) {
-        std::cerr << "ERROR: Connection attempt timed out\n";
-        close(sockfd);
-        return 2;
-    }
+	setsockopt(sockfd, SOL_SOCKET,SO_SNDTIMEO, (const char*)&timeout, sizeof(struct timeval));
+
+    /* if (select(sockfd + 1, NULL, &writefds, NULL, &timeout) <= 0 || !FD_ISSET(sockfd, &writefds)) { */
+    /*     std::cerr << "ERROR: Connection attempt timed out\n"; */
+    /*     close(sockfd); */
+    /*     return 2; */
+    /* } */
 
     if (connect(sockfd, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) == -1) {
         perror("ERROR: connect");

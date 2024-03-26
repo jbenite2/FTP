@@ -74,15 +74,17 @@ int main(int argc, char *argv[]) {
         timeout.tv_sec = 10;
         timeout.tv_usec = 0;
 
+		setsockopt(sockfd, SOL_SOCKET,SO_SNDTIMEO, (const char*)&timeout, sizeof(struct timeval));
+
         // Wait for connection with a timeout of 10 seconds
-        int ready = select(sockfd + 1, &readfds, NULL, NULL, &timeout);
-        if (ready == -1) {
-            perror("select");
-            return 4;
-        } else if (ready == 0) {
-            // Timeout occurred
-            continue;
-        }
+        /* int ready = select(sockfd + 1, &readfds, NULL, NULL, &timeout); */
+        /* if (ready == -1) { */
+        /*     perror("select"); */
+        /*     return 4; */
+        /* } else if (ready == 0) { */
+        /*     // Timeout occurred */
+        /*     continue; */
+        /* } */
 
         if (FD_ISSET(sockfd, &readfds)) {
             // Accept a new connection from a client
