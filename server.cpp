@@ -21,62 +21,80 @@ void signalHandler(int signal) {
 }
 
 int main(int argc, char *argv[]) {
+	
+	// Incorrect number of arguments
+    if (argc != 3) {
+        std::cerr << "ERROR: incorrect number of arguments\n";
+        return 3;
+    }
+
     // Server handles SIGTERM / SIGQUIT signals
     signal(SIGQUIT, signalHandler);
     signal(SIGTERM, signalHandler);
 
     // Create a socket using TCP IP
     int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+	if (sockfd == -1) {
+		std::cerr << "ERROR: " << strerror(errno) << std::endl;
+		return 1;
+	}
 
     // Allow others to reuse the address
     int yes = 1;
     if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1) {
         perror("setsockopt");
-        return 1;
+        return 2;
     }
 
-    // Bind to a port and an address
-    if (argc != 3) {
-        std::cerr << "Error: incorrect number of arguments\n";
-        return 1;
-    }
-
+	// Initialize the port
     int port = std::stoi(argv[1]);
+    if (port < 1024 || port > 65534) {
+        std::cerr << "ERROR: invalid port number\n";
+        return 1;
+    }
 
+	// Initialize the address
     struct sockaddr_in addr;
     addr.sin_family = AF_INET;
     addr.sin_port = htons(port);
     addr.sin_addr.s_addr = htonl(INADDR_ANY);
     memset(addr.sin_zero, '\0', sizeof(addr.sin_zero));
 
-    if (port < 1024 || port > 65534) {
-        std::cerr << "ERROR: invalid port number\n";
-        return 1;
-    }
 
+    // Bind to a port and an address
     if (bind(sockfd, (struct sockaddr*)&addr, sizeof(addr)) == -1) {
         perror("bind");
         return 2;
     }
 
+	// Listen for incoming connections
     if (listen(sockfd, 1) == -1) {
         perror("listen");
         return 3;
     }
 
+
+	// Connection Counter
 	int connectionId = 1;
 
     while (1) {
-
-		fd_set readfds;
-		FD_ZERO(&readfds);
-		FD_SET(sockfd, &readfds);
+		/* fd_set readfds; */
+		/* FD_ZERO(&readfds); */
+		/* FD_SET(sockfd, &readfds); */
    
-		if (FD_ISSET(sockfd, &readfds)) {
+		/* if (FD_ISSET(sockfd, &readfds)) { */
             // Accept a new connection from a client
             struct sockaddr_in clientAddr;
             socklen_t clientAddrSize = sizeof(clientAddr);
             int clientSockfd = accept(sockfd, (struct sockaddr*)&clientAddr, &clientAddrSize);
+
+			if(clientSockfd == -1) {
+				if (errno == EINTR) {
+					break;
+				}
+				std::cerr << "ERROR: " << strerror(errno) << std::endl;
+				continue;
+			}
 
             char ipstr[INET_ADDRSTRLEN] = {'\0'};
             inet_ntop(clientAddr.sin_family, &clientAddr.sin_addr, ipstr, sizeof(ipstr));
@@ -134,7 +152,7 @@ int main(int argc, char *argv[]) {
 			outputFile.close();
             shutdown(clientSockfd, SHUT_RDWR);
             close(clientSockfd);
-        }
+        /* } */
     }
 
     close(sockfd);
