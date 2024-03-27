@@ -106,14 +106,13 @@ int main(int argc, char *argv[]) {
 
 		std::fstream outputFile;
 		outputFile.open(filePath, std::ios::out);
-
 		if (!outputFile.is_open()) {
 			std::cerr << "Error: cannot open the file (" << filePath << ")" << std::endl;
 			return 6;
 		}
 
 		// Initialize buffer to read data from the client
-		std::vector<char> buffer(1024);
+		char buffer[1024];
 		ssize_t bytesRead;
 
 		// Set timeout for the socket
@@ -123,7 +122,7 @@ int main(int argc, char *argv[]) {
 		setsockopt(clientSockfd, SOL_SOCKET,SO_RCVTIMEO, (const char*)&timeout, sizeof(timeout));
 
 		while (true) {
-			bytesRead = recv(clientSockfd, buffer.data(), buffer.size(), 0);
+			bytesRead = recv(clientSockfd, buffer, sizeof(buffer), 0);
 			if (bytesRead < 0) {
 				if (errno == EAGAIN || errno == EWOULDBLOCK) {
 					std::cerr << "ERROR: Timeout occurred. " << std::endl; 
@@ -140,7 +139,7 @@ int main(int argc, char *argv[]) {
 			} else if (bytesRead == 0) {
 				break;
 			} else {
-				outputFile.write(buffer.data(), bytesRead);
+				outputFile.write(buffer, bytesRead);
 			}
 		}
 
