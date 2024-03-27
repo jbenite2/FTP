@@ -94,12 +94,6 @@ int main(int argc, char *argv[]) {
 
 	setsockopt(sockfd, SOL_SOCKET,SO_SNDTIMEO, (const char*)&timeout, sizeof(struct timeval));
 
-    /* if (select(sockfd + 1, NULL, &writefds, NULL, &timeout) <= 0 || !FD_ISSET(sockfd, &writefds)) { */
-    /*     std::cerr << "ERROR: Connection attempt timed out\n"; */
-    /*     close(sockfd); */
-    /*     return 2; */
-    /* } */
-
     if (connect(sockfd, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) == -1) {
         perror("ERROR: connect");
         close(sockfd);
@@ -149,38 +143,39 @@ int main(int argc, char *argv[]) {
 
     // Read the file into a buffer
     char *buffer = new char[fileSize];
-    if (!file.read(buffer, fileSize)) {
-        std::cerr << "Error reading file: " << filename << std::endl;
-        delete[] buffer;
-        close(sockfd);
-        return 8;
-    }
+    while (file) {
+        file.read(buffer, fileSize);
+        size_t bytesRead = file.gcount();
 
-   /* / Send the file */
-    size_t bytesSent = send(sockfd, buffer, fileSize, 0);
-    if (bytesSent <= 0) {
-        if (serverDisconnected) {
-            std::cerr << "ERROR: Server disconnected\n";
-			abort();
-        } else {
-            perror("send");
+        // Send file contents to server
+        ssize_t bytesSent = send(sockfd, buffer, bytesRead, 0);
+        if (bytesSent <= 0) {
+            if (bytesSent == 0) {
+                std::cerr << "ERROR: Server disconnected during file transfer\n";
+            } else {
+                perror("send");
+            }
+            delete[] buffer;
+            close(sockfd);
+            return 9;
         }
-        delete[] buffer;
-        close(sockfd);
-        return 9;
     }
- 
 
-    std::cout << "Sent " << bytesSent << " bytes" << std::endl;
-
-    // Cleanup
-    delete[] buffer;
-    file.close();
-    close(sockfd);
+    // Check for server disconnection after file transfer loop
+    if (serverDisconnected) {
+        std::cerr << "ERROR: Server disconnected\n";
+        close(sockfd);
+        return 10;
+    }
 
     std::cout << "File sent successfully" << std::endl;
     std::cout << "Connection closed" << std::endl;
     std::cout << "Client exits with code 0" << std::endl;
+
+    delete[] buffer;
+    file.close();
+    close(sockfd);
+
     return 0;
 }
 
