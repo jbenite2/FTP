@@ -42,7 +42,7 @@ int main(int argc, char *argv[]) {
     // Allow others to reuse the address
     int yes = 1;
     if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1) {
-        perror("setsockopt");
+        perror("ERROR: setsockopt");
         return 2;
     }
 
@@ -73,7 +73,6 @@ int main(int argc, char *argv[]) {
         return 3;
     }
 
-
 	// Connection Counter
 	int connectionId = 1;
 
@@ -90,10 +89,6 @@ int main(int argc, char *argv[]) {
 			std::cerr << "ERROR: " << strerror(errno) << std::endl;
 			continue;
 		}
-
-		/* char ipstr[INET_ADDRSTRLEN] = {'\0'}; */
-		/* inet_ntop(clientAddr.sin_family, &clientAddr.sin_addr, ipstr, sizeof(ipstr)); */
-		/* std::cout << "Accept a connection from: " << ipstr << ":" << ntohs(clientAddr.sin_port) << std::endl; */
 
 		std::string directoryPath = std::string(argv[2]);
 		int result = mkdir(directoryPath.c_str(), 0777);
@@ -126,10 +121,11 @@ int main(int argc, char *argv[]) {
 			if (bytesRead < 0) {
 				if (errno == EAGAIN || errno == EWOULDBLOCK) {
 					std::cerr << "ERROR: Timeout occurred. " << std::endl; 
-					outputFile.close();
-					remove(filePath.c_str());
-					outputFile.open(filePath, std::ios::trunc);
+					/* outputFile.close(); */
+					/* remove(filePath.c_str()); */
+					/* outputFile.open(filePath, std::ios::trunc); */
 					outputFile.seekp(0) ;
+					outputFile.clear();
 					outputFile<<"ERROR";
 					break;
 				} else {
