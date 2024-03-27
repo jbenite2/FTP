@@ -83,22 +83,11 @@ int main(int argc, char *argv[]) {
 		return 2;
 	}
 
-
-    fd_set writefds;
-    FD_ZERO(&writefds);
-    FD_SET(sockfd, &writefds);
-
     struct timeval timeout;
     timeout.tv_sec = 10;
     timeout.tv_usec = 0;
 
 	setsockopt(sockfd, SOL_SOCKET,SO_SNDTIMEO, (const char*)&timeout, sizeof(struct timeval));
-
-    /* if (select(sockfd + 1, NULL, &writefds, NULL, &timeout) <= 0 || !FD_ISSET(sockfd, &writefds)) { */
-    /*     std::cerr << "ERROR: Connection attempt timed out\n"; */
-    /*     close(sockfd); */
-    /*     return 2; */
-    /* } */
 
     if (connect(sockfd, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) == -1) {
         perror("ERROR: connect");
@@ -147,29 +136,6 @@ int main(int argc, char *argv[]) {
         return 7;
     }
 
-    // Read the file into a buffer
-    /* char *buffer = new char[fileSize]; */
-    /* if (!file.read(buffer, fileSize)) { */
-    /*     std::cerr << "Error reading file: " << filename << std::endl; */
-    /*     delete[] buffer; */
-    /*     close(sockfd); */
-    /*     return 8; */
-    /* } */
-
-   /* /1* / Send the file *1/ */
-    /* size_t bytesSent = send(sockfd, buffer, fileSize, 0); */
-    /* if (bytesSent <= 0) { */
-    /*     if (serverDisconnected) { */
-    /*         std::cerr << "ERROR: Server disconnected\n"; */
-			/* abort(); */
-    /*     } else { */
-    /*         perror("send"); */
-    /*     } */
-    /*     delete[] buffer; */
-    /*     close(sockfd); */
-    /*     return 9; */
-    /* } */
-
 	char buffer[1024];
 	while (file) {
 		file.read(buffer, sizeof(buffer));
@@ -201,9 +167,6 @@ int main(int argc, char *argv[]) {
     file.close();
     close(sockfd);
 
-    std::cout << "File sent successfully" << std::endl;
-    std::cout << "Connection closed" << std::endl;
-    std::cout << "Client exits with code 0" << std::endl;
     return 0;
 }
 
