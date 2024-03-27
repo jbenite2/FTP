@@ -189,20 +189,15 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
-// Check for server disconnection after file transfer loop
-if (serverDisconnected) {
-    std::cerr << "ERROR: Server disconnected\n";
-    close(sockfd);
-    return 10;
-}
+	// Check for server disconnection after file transfer loop
+	if (serverDisconnected) {
+		std::cerr << "ERROR: Server disconnected\n";
+		close(sockfd);
+		return 10;
+	}
 
-
- 
-
-    std::cout << "Sent " << bytesSent << " bytes" << std::endl;
 
     // Cleanup
-    delete[] buffer;
     file.close();
     close(sockfd);
 
