@@ -181,7 +181,7 @@ int main(int argc, char *argv[]) {
 			if (bytesSent == 0) {
 				std::cerr << "ERROR: Server disconnected during file transfer\n";
 			} else {
-				perror("send");
+				perror("ERROR: send");
 			}
 			//delete buffer
 			close(sockfd);
