@@ -148,27 +148,55 @@ int main(int argc, char *argv[]) {
     }
 
     // Read the file into a buffer
-    char *buffer = new char[fileSize];
-    if (!file.read(buffer, fileSize)) {
-        std::cerr << "Error reading file: " << filename << std::endl;
-        delete[] buffer;
-        close(sockfd);
-        return 8;
-    }
+    /* char *buffer = new char[fileSize]; */
+    /* if (!file.read(buffer, fileSize)) { */
+    /*     std::cerr << "Error reading file: " << filename << std::endl; */
+    /*     delete[] buffer; */
+    /*     close(sockfd); */
+    /*     return 8; */
+    /* } */
 
-   /* / Send the file */
-    size_t bytesSent = send(sockfd, buffer, fileSize, 0);
-    if (bytesSent <= 0) {
-        if (serverDisconnected) {
-            std::cerr << "ERROR: Server disconnected\n";
-			abort();
-        } else {
-            perror("send");
-        }
-        delete[] buffer;
-        close(sockfd);
-        return 9;
-    }
+   /* /1* / Send the file *1/ */
+    /* size_t bytesSent = send(sockfd, buffer, fileSize, 0); */
+    /* if (bytesSent <= 0) { */
+    /*     if (serverDisconnected) { */
+    /*         std::cerr << "ERROR: Server disconnected\n"; */
+			/* abort(); */
+    /*     } else { */
+    /*         perror("send"); */
+    /*     } */
+    /*     delete[] buffer; */
+    /*     close(sockfd); */
+    /*     return 9; */
+    /* } */
+
+	char buffer[1024];
+	while (file) {
+		file.read(buffer, sizeof(buffer));
+		size_t bytesRead = file.gcount();
+
+		// Send file contents to server
+		ssize_t bytesSent = send(sockfd, buffer, bytesRead, 0);
+		if (bytesSent <= 0) {
+			if (bytesSent == 0) {
+				std::cerr << "ERROR: Server disconnected during file transfer\n";
+			} else {
+				perror("send");
+			}
+			//delete buffer
+			close(sockfd);
+			return 9;
+		}
+	}
+
+// Check for server disconnection after file transfer loop
+if (serverDisconnected) {
+    std::cerr << "ERROR: Server disconnected\n";
+    close(sockfd);
+    return 10;
+}
+
+
  
 
     std::cout << "Sent " << bytesSent << " bytes" << std::endl;
