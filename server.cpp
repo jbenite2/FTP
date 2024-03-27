@@ -78,81 +78,75 @@ int main(int argc, char *argv[]) {
 	int connectionId = 1;
 
     while (1) {
-		/* fd_set readfds; */
-		/* FD_ZERO(&readfds); */
-		/* FD_SET(sockfd, &readfds); */
-   
-		/* if (FD_ISSET(sockfd, &readfds)) { */
-            // Accept a new connection from a client
-            struct sockaddr_in clientAddr;
-            socklen_t clientAddrSize = sizeof(clientAddr);
-            int clientSockfd = accept(sockfd, (struct sockaddr*)&clientAddr, &clientAddrSize);
+		// Accept a new connection from a client
+		struct sockaddr_in clientAddr;
+		socklen_t clientAddrSize = sizeof(clientAddr);
+		int clientSockfd = accept(sockfd, (struct sockaddr*)&clientAddr, &clientAddrSize);
 
-			if(clientSockfd == -1) {
-				if (errno == EINTR) {
-					break;
-				}
-				std::cerr << "ERROR: " << strerror(errno) << std::endl;
-				continue;
+		if(clientSockfd == -1) {
+			if (errno == EINTR) {
+				break;
 			}
+			std::cerr << "ERROR: " << strerror(errno) << std::endl;
+			continue;
+		}
 
-            char ipstr[INET_ADDRSTRLEN] = {'\0'};
-            inet_ntop(clientAddr.sin_family, &clientAddr.sin_addr, ipstr, sizeof(ipstr));
-            std::cout << "Accept a connection from: " << ipstr << ":" << ntohs(clientAddr.sin_port) << std::endl;
+		/* char ipstr[INET_ADDRSTRLEN] = {'\0'}; */
+		/* inet_ntop(clientAddr.sin_family, &clientAddr.sin_addr, ipstr, sizeof(ipstr)); */
+		/* std::cout << "Accept a connection from: " << ipstr << ":" << ntohs(clientAddr.sin_port) << std::endl; */
 
-            std::string directoryPath = std::string(argv[2]);
-            int result = mkdir(directoryPath.c_str(), 0777);
-            if (result == -1 && errno != EEXIST) {
-                std::cerr << "Error creating directory: " << strerror(errno) << std::endl;
-            }
+		std::string directoryPath = std::string(argv[2]);
+		int result = mkdir(directoryPath.c_str(), 0777);
+		if (result == -1 && errno != EEXIST) {
+			std::cerr << "Error creating directory: " << strerror(errno) << std::endl;
+		}
 
-            std::string filePath = directoryPath + "/" + std::to_string(connectionId) + ".file";
-            connectionId++;
+		std::string filePath = directoryPath + "/" + std::to_string(connectionId) + ".file";
+		connectionId++;
 
-            std::fstream outputFile;
-            outputFile.open(filePath, std::ios::out);
+		std::fstream outputFile;
+		outputFile.open(filePath, std::ios::out);
 
-            if (!outputFile.is_open()) {
-                std::cerr << "Error: cannot open the file (" << filePath << ")" << std::endl;
-                return 6;
-            }
+		if (!outputFile.is_open()) {
+			std::cerr << "Error: cannot open the file (" << filePath << ")" << std::endl;
+			return 6;
+		}
 
-			// Initialize buffer to read data from the client
-            std::vector<char> buffer(1024);
-            ssize_t bytesRead;
+		// Initialize buffer to read data from the client
+		std::vector<char> buffer(1024);
+		ssize_t bytesRead;
 
-			// Set timeout for the socket
-			struct timeval timeout;
-			timeout.tv_sec = 10;
-			timeout.tv_usec = 0;
-			setsockopt(clientSockfd, SOL_SOCKET,SO_RCVTIMEO, (const char*)&timeout, sizeof(timeout));
+		// Set timeout for the socket
+		struct timeval timeout;
+		timeout.tv_sec = 10;
+		timeout.tv_usec = 0;
+		setsockopt(clientSockfd, SOL_SOCKET,SO_RCVTIMEO, (const char*)&timeout, sizeof(timeout));
 
-            while (true) {
-				bytesRead = recv(clientSockfd, buffer.data(), buffer.size(), 0);
-                if (bytesRead < 0) {
-					if (errno == EAGAIN || errno == EWOULDBLOCK) {
-						std::cerr << "ERROR: Timeout occurred. " << std::endl; 
-						outputFile.close();
-						remove(filePath.c_str());
-						outputFile.open(filePath, std::ios::trunc);
-						outputFile.seekp(0) ;
-						outputFile<<"ERROR";
-						break;
-					} else {
-						std::cerr << "ERROR: " << strerror(errno) << std::endl;
-						break;
-					}
-                } else if (bytesRead == 0) {
+		while (true) {
+			bytesRead = recv(clientSockfd, buffer.data(), buffer.size(), 0);
+			if (bytesRead < 0) {
+				if (errno == EAGAIN || errno == EWOULDBLOCK) {
+					std::cerr << "ERROR: Timeout occurred. " << std::endl; 
+					outputFile.close();
+					remove(filePath.c_str());
+					outputFile.open(filePath, std::ios::trunc);
+					outputFile.seekp(0) ;
+					outputFile<<"ERROR";
 					break;
 				} else {
-					outputFile.write(buffer.data(), bytesRead);
+					std::cerr << "ERROR: " << strerror(errno) << std::endl;
+					break;
 				}
-            }
+			} else if (bytesRead == 0) {
+				break;
+			} else {
+				outputFile.write(buffer.data(), bytesRead);
+			}
+		}
 
-			outputFile.close();
-            shutdown(clientSockfd, SHUT_RDWR);
-            close(clientSockfd);
-        /* } */
+		outputFile.close();
+		shutdown(clientSockfd, SHUT_RDWR);
+		close(clientSockfd);
     }
 
     close(sockfd);
