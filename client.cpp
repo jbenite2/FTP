@@ -128,7 +128,7 @@ int main(int argc, char *argv[]) {
     // Open the file
     std::ifstream file(filePath, std::ios::binary | std::ios::ate);
     if (!file.is_open()) {
-        std::cerr << "Unable to open file: " << filePath << std::endl;
+        std::cerr << "ERROR: Unable to open file: " << filePath << std::endl;
         close(sockfd);
         return 5;
     }
@@ -138,11 +138,11 @@ int main(int argc, char *argv[]) {
     file.seekg(0, std::ios::beg);
 
     if (fileSize == 0) {
-        std::cerr << "Error: file is empty" << std::endl;
+        std::cerr << "ERROR: file is empty" << std::endl;
         close(sockfd);
         return 6;
     } else if (fileSize > 100 * 1024 * 1024) {
-        std::cerr << "Error: file is too large" << std::endl;
+        std::cerr << "ERROR: file is too large" << std::endl;
         close(sockfd);
         return 7;
     }
