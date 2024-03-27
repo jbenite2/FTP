@@ -161,6 +161,7 @@ int main(int argc, char *argv[]) {
     if (bytesSent <= 0) {
         if (serverDisconnected) {
             std::cerr << "ERROR: Server disconnected\n";
+			abort();
         } else {
             perror("send");
         }
