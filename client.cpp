@@ -83,6 +83,11 @@ int main(int argc, char *argv[]) {
 		return 2;
 	}
 
+
+    fd_set writefds;
+    FD_ZERO(&writefds);
+    FD_SET(sockfd, &writefds);
+
     struct timeval timeout;
     timeout.tv_sec = 10;
     timeout.tv_usec = 0;
